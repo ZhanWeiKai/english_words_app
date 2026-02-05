@@ -1,0 +1,620 @@
+{
+  "version": "2.7",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "sgwRP",
+      "x": 100,
+      "y": 100,
+      "name": "Scene Practice - Role Play",
+      "width": 393,
+      "height": 852,
+      "fill": "#faf9f7",
+      "cornerRadius": 50,
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "5ym1C",
+          "name": "practiceStatusBar",
+          "width": "fill_container",
+          "height": 54,
+          "padding": [
+            16,
+            32,
+            8,
+            32
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "lLI6U",
+              "name": "practiceTime",
+              "fill": "#1a1a1a",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "XNIW9",
+          "name": "practiceHeader",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            8,
+            16,
+            16,
+            16
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "ywNvB",
+              "name": "practiceHeaderTop",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jLRFi",
+                  "name": "practiceBackBtn",
+                  "width": 40,
+                  "height": 40,
+                  "fill": "#ffffff",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "8bXci",
+                      "name": "practiceBackIcon",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "close",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#1a1a1a"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "5UsKg",
+                  "name": "practiceTitle",
+                  "fill": "#1a1a1a",
+                  "content": "Restaurant Scene",
+                  "fontFamily": "Inter",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xfA9j",
+              "name": "progressSection",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oegTA",
+                  "name": "progressLabel",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "SG26f",
+                      "name": "progressText",
+                      "fill": "#6b6b6b",
+                      "content": "Practice Progress",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "jMJBX",
+                      "name": "progressCount",
+                      "fill": "#e07a5f",
+                      "content": "3/5 turns",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "7BQ9I",
+                  "name": "progressBar",
+                  "width": "fill_container",
+                  "height": 6,
+                  "fill": "#e5e5e5",
+                  "cornerRadius": 3,
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 3,
+                      "id": "yfuOb",
+                      "name": "progressFill",
+                      "fill": "#e07a5f",
+                      "width": "fill_container",
+                      "height": "fill_container"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ISK17",
+              "name": "targetWord",
+              "width": "fill_container",
+              "fill": "#fff8f5",
+              "cornerRadius": 12,
+              "gap": 8,
+              "padding": [
+                10,
+                12
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "Yul8G",
+                  "name": "targetWordIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "flag",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 400,
+                  "fill": "#e07a5f"
+                },
+                {
+                  "type": "text",
+                  "id": "G8oa1",
+                  "name": "targetWordText",
+                  "fill": "#1a1a1a",
+                  "content": "Target word: **recommend**",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HV5sO",
+          "name": "roleCard",
+          "width": "fill_container",
+          "fill": "#ffffff",
+          "cornerRadius": 16,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#e5e5e5"
+          },
+          "gap": 12,
+          "padding": 12,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "caEur",
+              "name": "roleAvatar",
+              "width": 48,
+              "height": 48,
+              "fill": "#f5f5f5",
+              "cornerRadius": 24,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "8QepU",
+                  "name": "roleAvatarIcon",
+                  "width": 24,
+                  "height": 24,
+                  "iconFontName": "restaurant",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 400,
+                  "fill": "#1a1a1a"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "p6kEv",
+              "name": "roleInfo",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "7SaXa",
+                  "name": "roleName",
+                  "fill": "#1a1a1a",
+                  "content": "I'm the waiter",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "nuZwN",
+                  "name": "roleDesc",
+                  "fill": "#6b6b6b",
+                  "content": "Welcome! How can I help you today?",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "5fRU2",
+          "name": "practiceChatArea",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            16,
+            16,
+            16
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "PnnCW",
+              "name": "aiRoleMessage",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IoDBp",
+                  "name": "aiRoleAvatar",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#1a1a1a",
+                  "cornerRadius": 16,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "WiT71",
+                      "name": "aiRoleAvatarIcon",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "restaurant",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#ffffff"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "LY96E",
+                  "name": "aiRoleBubble",
+                  "width": "fill_container",
+                  "fill": "#f5f5f5",
+                  "cornerRadius": [
+                    16,
+                    16,
+                    16,
+                    4
+                  ],
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "L3umS",
+                      "name": "aiRoleText",
+                      "fill": "#1a1a1a",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Good evening! Welcome to our restaurant. Here's the menu. Can I get you started with some drinks?",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "EuKcp",
+              "name": "userPracticeMessage",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "GODMC",
+                  "name": "userPracticeBubble",
+                  "width": "fill_container",
+                  "fill": "#e07a5f",
+                  "cornerRadius": [
+                    16,
+                    16,
+                    4,
+                    16
+                  ],
+                  "layout": "vertical",
+                  "gap": 4,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "5TKIF",
+                      "name": "userPracticeText",
+                      "fill": "#ffffff",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Yes, please. What do you **recommend**?",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "JEQVj",
+              "name": "aiFeedback",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "kg2DB",
+                  "name": "aiFeedbackAvatar",
+                  "width": 32,
+                  "height": 32,
+                  "fill": "#81b29a",
+                  "cornerRadius": 16,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "BZxEo",
+                      "name": "aiFeedbackIcon",
+                      "width": 16,
+                      "height": 16,
+                      "iconFontName": "check",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 600,
+                      "fill": "#ffffff"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TaFes",
+                  "name": "aiFeedbackBubble",
+                  "width": "fill_container",
+                  "fill": "#f0f9f6",
+                  "cornerRadius": [
+                    16,
+                    16,
+                    16,
+                    4
+                  ],
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#81b29a"
+                  },
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "EyVEd",
+                      "name": "feedbackTitle",
+                      "width": "fill_container",
+                      "gap": 6,
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "l9vgd",
+                          "name": "feedbackIcon",
+                          "width": 16,
+                          "height": 16,
+                          "iconFontName": "stars",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#81b29a"
+                        },
+                        {
+                          "type": "text",
+                          "id": "A1oFW",
+                          "name": "feedbackText",
+                          "fill": "#1a1a1a",
+                          "content": "Great! You used 'recommend'!",
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "imhkA",
+                      "name": "aiResponseText",
+                      "fill": "#1a1a1a",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Excellent choice! Our signature cocktails are quite popular. The lavender lemonade is very refreshing.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VU2Ni",
+          "name": "practiceInputArea",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            12,
+            16
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "reKmp",
+              "name": "practiceInputContainer",
+              "width": "fill_container",
+              "height": 48,
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "SWBcn",
+                  "name": "practiceInputBox",
+                  "width": "fill_container",
+                  "height": 48,
+                  "fill": "#ffffff",
+                  "cornerRadius": 24,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "vmv4t",
+                      "name": "practiceInputField",
+                      "fill": "#6b6b6b",
+                      "content": "Type your response...",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "p53N3",
+                  "name": "practiceSendBtn",
+                  "width": 48,
+                  "height": 48,
+                  "fill": "#e07a5f",
+                  "cornerRadius": 24,
+                  "padding": 12,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "2fno9",
+                      "name": "practiceSendIcon",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "send",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 500,
+                      "fill": "#ffffff"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YPEJt",
+          "name": "practiceBottomSafe",
+          "width": "fill_container",
+          "height": 34,
+          "layout": "vertical",
+          "padding": [
+            8,
+            24,
+            0,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "mDlSK",
+              "name": "practiceHomeIndicator",
+              "fill": "#1a1a1a",
+              "width": 134,
+              "height": 5
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

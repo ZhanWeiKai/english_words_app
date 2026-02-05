@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Word App - UI Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .screen-title {
+            width: 100%;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .phone-frame {
+            width: 393px;
+            height: 852px;
+            background: #faf9f7;
+            border-radius: 50px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            border: 12px solid #1a1a1a;
+        }
+
+        .status-bar {
+            height: 54px;
+            padding: 16px 32px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .screen-label {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Design System */
+        .design-system {
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            max-width: 600px;
+        }
+
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-swatch {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .color-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .color-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .color-hex {
+            font-size: 11px;
+            color: #6b6b6b;
+        }
+
+        /* Main Screen Styles */
+        .header {
+            padding: 8px 24px 16px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .app-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .word-count {
+            font-size: 14px;
+            color: #6b6b6b;
+        }
+
+        .settings-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            height: 48px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            font-size: 15px;
+            color: #6b6b6b;
+            flex: 1;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .tag-active {
+            background: #e07a5f;
+            color: white;
+        }
+
+        .tag-inactive {
+            background: white;
+            color: #6b6b6b;
+            border: 1px solid #e5e5e5;
+        }
+
+        .word-list {
+            padding: 0 24px 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 600px;
+            overflow-y: auto;
+        }
+
+        .word-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .word-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .word-text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .word {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .phonetic {
+            font-size: 13px;
+            color: #6b6b6b;
+        }
+
+        .stars {
+            display: flex;
+            gap: 4px;
+        }
+
+        .star {
+            font-size: 20px;
+        }
+
+        .star-filled {
+            color: #e07a5f;
+        }
+
+        .star-empty {
+            color: #e5e5e5;
+        }
+
+        .meaning {
+            font-size: 14px;
+            color: #6b6b6b;
+            line-height: 1.4;
+        }
+
+        .fab-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .ai-btn {
+            position: absolute;
+            top: 132px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            background: #1a1a1a;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            pointer-events: auto;
+        }
+
+        .train-btn {
+            position: absolute;
+            bottom: 84px;
+            right: 16px;
+            width: 72px;
+            height: 72px;
+            background: #e07a5f;
+            border-radius: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(224, 122, 95, 0.4);
+            pointer-events: auto;
+        }
+
+        .bottom-safe {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 34px;
+            padding: 8px 24px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .home-indicator {
+            width: 134px;
+            height: 5px;
+            background: #1a1a1a;
+            border-radius: 3px;
+        }
+
+        /* Chat Screen Styles */
+        .chat-header {
+            padding: 8px 16px 8px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 56px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .chat-title-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .chat-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chat-subtitle {
+            font-size: 13px;
+            color: #6b6b6b;
+        }
+
+        .chat-area {
+            padding: 16px;
+            height: 650px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 8px;
+        }
+
+        .message-user {
+            justify-content: flex-end;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .avatar-ai {
+            background: #1a1a1a;
+        }
+
+        .avatar-success {
+            background: #81b29a;
+        }
+
+        .message-bubble {
+            padding: 12px;
+            border-radius: 16px;
+            max-width: 260px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .bubble-ai {
+            background: #f5f5f5;
+            border-radius: 16px 16px 16px 4px;
+        }
+
+        .bubble-user {
+            background: #e07a5f;
+            border-radius: 16px 16px 4px 16px;
+        }
+
+        .bubble-feedback {
+            background: #f0f9f6;
+            border: 2px solid #81b29a;
+            border-radius: 16px 16px 16px 4px;
+            gap: 6px;
+        }
+
+        .message-text {
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .text-ai {
+            color: #1a1a1a;
+        }
+
+        .text-user {
+            color: white;
+        }
+
+        .example-card {
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .example-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b6b6b;
+        }
+
+        .example-text {
+            font-size: 13px;
+            color: #1a1a1a;
+            font-style: italic;
+        }
+
+        .action-btn {
+            background: #e07a5f;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .input-area {
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-box {
+            flex: 1;
+            height: 48px;
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 24px;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            background: #e07a5f;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* Practice Screen Styles */
+        .practice-header {
+            padding: 8px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .practice-header-top {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .practice-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .progress-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .progress-text {
+            font-weight: 500;
+            color: #6b6b6b;
+        }
+
+        .progress-count {
+            font-weight: 600;
+            color: #e07a5f;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e5e5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #e07a5f;
+            border-radius: 3px;
+            width: 60%;
+        }
+
+        .target-word {
+            background: #fff8f5;
+            padding: 10px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .role-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .role-avatar {
+            width: 48px;
+            height: 48px;
+            background: #f5f5f5;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .role-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .role-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .role-desc {
+            font-size: 13px;
+            color: #6b6b6b;
+        }
+
+        .feedback-title {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .icon {
+            font-size: 24px;
+            color: inherit;
+        }
+
+        .icon-sm {
+            font-size: 18px;
+        }
+
+        .icon-xs {
+            font-size: 16px;
+        }
+
+        .material-symbols-rounded {
+            font-family: 'Material Symbols Rounded';
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="screen-title">English Word App - UI Design</h1>
+
+    <div class="app-container">
+        <!-- Screen 1: Word Vault - Main Screen -->
+        <div style="position: relative;">
+            <div class="screen-label">1. Word Vault (Home)</div>
+            <div class="phone-frame">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div class="status-icons">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">signal_cellular_alt</span>
+                        <span class="material-symbols-rounded" style="font-size: 18px;">wifi</span>
+                        <span class="material-symbols-rounded" style="font-size: 18px;">battery_full</span>
+                    </div>
+                </div>
+
+                <!-- Header -->
+                <div class="header">
+                    <div class="header-top">
+                        <div>
+                            <div class="app-title">Word Vault</div>
+                            <div class="word-count">12 words in your collection</div>
+                        </div>
+                        <div class="settings-btn">
+                            <span class="material-symbols-rounded">settings</span>
+                        </div>
+                    </div>
+                    <div class="search-bar">
+                        <span class="material-symbols-rounded">search</span>
+                        <input type="text" class="search-input" placeholder="Search words...">
+                    </div>
+                    <div class="filter-tags">
+                        <div class="tag tag-active">
+                            <span>All</span>
+                            <span>12</span>
+                        </div>
+                        <div class="tag tag-inactive">
+                            <span>Learning</span>
+                            <span>5</span>
+                        </div>
+                        <div class="tag tag-inactive">
+                            <span>Mastered</span>
+                            <span>7</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Word List -->
+                <div class="word-list">
+                    <div class="word-card">
+                        <div class="word-card-header">
+                            <div class="word-text">
+                                <div class="word">ephemeral</div>
+                                <div class="phonetic">/əˈfem(ə)rəl/</div>
+                            </div>
+                            <div class="stars">
+                                <span class="material-symbols-rounded star star-filled">star</span>
+                                <span class="material-symbols-rounded star star-filled">star</span>
+                                <span class="material-symbols-rounded star star-empty">star</span>
+                            </div>
+                        </div>
+                        <div class="meaning">lasting for a very short time</div>
+                    </div>
+
+                    <div class="word-card">
+                        <div class="word-card-header">
+                            <div class="word-text">
+                                <div class="word">serendipity</div>
+                                <div class="phonetic">/ˌserənˈdipədē/</div>
+                            </div>
+                            <div class="stars">
+                                <span class="material-symbols-rounded star star-filled">star</span>
+                                <span class="material-symbols-rounded star star-empty">star</span>
+                                <span class="material-symbols-rounded star star-empty">star</span>
+                            </div>
+                        </div>
+                        <div class="meaning">finding something good without looking for it</div>
+                    </div>
+
+                    <div class="word-card">
+                        <div class="word-card-header">
+                            <div class="word-text">
+                                <div class="word">ubiquitous</div>
+                                <div class="phonetic">/yo͞oˈbikwədəs/</div>
+                            </div>
+                            <div class="stars">
+                                <span class="material-symbols-rounded star star-filled">star</span>
+                                <span class="material-symbols-rounded star star-filled">star</span>
+                                <span class="material-symbols-rounded star star-filled">star</span>
+                            </div>
+                        </div>
+                        <div class="meaning">present, appearing, or found everywhere</div>
+                    </div>
+                </div>
+
+                <!-- Floating Buttons -->
+                <div class="fab-overlay">
+                    <div class="ai-btn">
+                        <span class="material-symbols-rounded" style="color: white; font-size: 20px;">smart_toy</span>
+                    </div>
+                    <div class="train-btn">
+                        <span class="material-symbols-rounded" style="color: white; font-size: 28px;">school</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Safe Area -->
+                <div class="bottom-safe">
+                    <div class="home-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: AI Chat -->
+        <div style="position: relative;">
+            <div class="screen-label">2. AI Chat</div>
+            <div class="phone-frame">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div class="status-icons">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">signal_cellular_alt</span>
+                        <span class="material-symbols-rounded" style="font-size: 18px;">wifi</span>
+                        <span class="material-symbols-rounded" style="font-size: 18px;">battery_full</span>
+                    </div>
+                </div>
+
+                <!-- Header -->
+                <div class="chat-header">
+                    <div class="back-btn">
+                        <span class="material-symbols-rounded">arrow_back_ios_new</span>
+                    </div>
+                    <div class="chat-title-section">
+                        <div class="chat-title">AI Learning Assistant</div>
+                        <div class="chat-subtitle">Ask me anything about words</div>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="chat-area">
+                    <!-- AI Welcome -->
+                    <div class="message">
+                        <div class="avatar avatar-ai">
+                            <span class="material-symbols-rounded" style="color: white; font-size: 18px;">smart_toy</span>
+                        </div>
+                        <div class="message-bubble bubble-ai">
+                            <div class="message-text text-ai">Hi! I'm your AI learning assistant. You can ask me about any English word, and I'll help you understand it better. What would you like to learn today?</div>
+                        </div>
+                    </div>
+
+                    <!-- User Message -->
+                    <div class="message message-user">
+                        <div class="message-bubble bubble-user">
+                            <div class="message-text text-user">What does 'ephemeral' mean?</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Response -->
+                    <div class="message">
+                        <div class="avatar avatar-ai">
+                            <span class="material-symbols-rounded" style="color: white; font-size: 18px;">smart_toy</span>
+                        </div>
+                        <div class="message-bubble bubble-ai" style="gap: 8px;">
+                            <div class="message-text text-ai" style="font-weight: 600;">**ephemeral** /əˈfem(ə)rəl/</div>
+                            <div class="message-text text-ai" style="font-size: 14px;">lasting for a very short time</div>
+                            <div class="example-card">
+                                <div class="example-label">Example:</div>
+                                <div class="example-text">"Fashions are ephemeral, changing with every season."</div>
+                            </div>
+                            <div class="action-btn">
+                                <span class="material-symbols-rounded icon-xs">add_circle</span>
+                                <span>Add to my word list</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-box">
+                        <span class="material-symbols-rounded" style="color: #6b6b6b;">search</span>
+                        <input type="text" class="search-input" placeholder="Ask about a word..." style="flex: 1;">
+                    </div>
+                    <div class="send-btn">
+                        <span class="material-symbols-rounded" style="color: white;">send</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Safe Area -->
+                <div class="bottom-safe">
+                    <div class="home-indicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Scene Practice -->
+        <div style="position: relative;">
+            <div class="screen-label">3. Scene Practice (Role Play)</div>
+            <div class="phone-frame">
+                <!-- Status Bar -->
+                <div class="status-bar">
+                    <span>9:41</span>
+                    <div class="status-icons">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">signal_cellular_alt</span>
+                        <span class="material-symbols-rounded" style="font-size: 18px;">wifi</span>
+                        <span class="material-symbols-rounded" style="font-size: 18px;">battery_full</span>
+                    </div>
+                </div>
+
+                <!-- Header -->
+                <div class="practice-header">
+                    <div class="practice-header-top">
+                        <div class="back-btn">
+                            <span class="material-symbols-rounded">close</span>
+                        </div>
+                        <div class="practice-title">Restaurant Scene</div>
+                    </div>
+                    <div class="progress-section">
+                        <div class="progress-label">
+                            <span class="progress-text">Practice Progress</span>
+                            <span class="progress-count">3/5 turns</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                    <div class="target-word">
+                        <span class="material-symbols-rounded icon-sm" style="color: #e07a5f;">flag</span>
+                        <span>Target word: <strong>recommend</strong></span>
+                    </div>
+                </div>
+
+                <!-- Role Card -->
+                <div style="padding: 0 16px;">
+                    <div class="role-card">
+                        <div class="role-avatar">
+                            <span class="material-symbols-rounded">restaurant</span>
+                        </div>
+                        <div class="role-info">
+                            <div class="role-name">I'm the waiter</div>
+                            <div class="role-desc">Welcome! How can I help you today?</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="chat-area" style="padding-top: 16px;">
+                    <!-- AI Role Message -->
+                    <div class="message">
+                        <div class="avatar avatar-ai">
+                            <span class="material-symbols-rounded" style="color: white; font-size: 16px;">restaurant</span>
+                        </div>
+                        <div class="message-bubble bubble-ai">
+                            <div class="message-text text-ai">Good evening! Welcome to our restaurant. Here's the menu. Can I get you started with some drinks?</div>
+                        </div>
+                    </div>
+
+                    <!-- User Message -->
+                    <div class="message message-user">
+                        <div class="message-bubble bubble-user">
+                            <div class="message-text text-user">Yes, please. What do you <strong>recommend</strong>?</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Feedback -->
+                    <div class="message">
+                        <div class="avatar avatar-success">
+                            <span class="material-symbols-rounded" style="color: white; font-size: 16px;">check</span>
+                        </div>
+                        <div class="message-bubble bubble-feedback">
+                            <div class="feedback-title">
+                                <span class="material-symbols-rounded icon-xs" style="color: #81b29a;">stars</span>
+                                <span>Great! You used 'recommend'!</span>
+                            </div>
+                            <div class="message-text text-ai" style="font-size: 14px;">Excellent choice! Our signature cocktails are quite popular. The lavender lemonade is very refreshing.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-box">
+                        <span class="material-symbols-rounded" style="color: #6b6b6b;">search</span>
+                        <input type="text" class="search-input" placeholder="Type your response..." style="flex: 1;">
+                    </div>
+                    <div class="send-btn">
+                        <span class="material-symbols-rounded" style="color: white;">send</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Safe Area -->
+                <div class="bottom-safe">
+                    <div class="home-indicator"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

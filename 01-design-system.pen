@@ -1,0 +1,338 @@
+{
+  "version": "2.7",
+  "children": [
+    {
+      "type": "frame",
+      "id": "hKBlI",
+      "x": 100,
+      "y": 100,
+      "name": "Design System",
+      "width": 400,
+      "height": 550,
+      "fill": "#ffffff",
+      "cornerRadius": 16,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#00000008",
+        "offset": {
+          "x": 0,
+          "y": 4
+        },
+        "blur": 20
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "Ox9P4",
+          "name": "title",
+          "fill": "#1a1a1a",
+          "content": "English Word App",
+          "fontFamily": "Inter",
+          "fontSize": 32,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "zRrw5",
+          "name": "subtitle",
+          "fill": "#6b6b6b",
+          "content": "Design System & Components",
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "PYahE",
+          "name": "divider",
+          "fill": "#e5e5e5",
+          "width": "fill_container",
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "rhTTF",
+          "name": "colorsTitle",
+          "fill": "#1a1a1a",
+          "content": "Colors",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "HArrO",
+          "name": "colorsSection",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "children": [
+            {
+              "type": "frame",
+              "id": "yyLjD",
+              "name": "bgRow",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 12,
+                  "id": "XO5ln",
+                  "name": "bgSwatch",
+                  "fill": "#faf9f7",
+                  "width": 56,
+                  "height": 56,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "L7MKZ",
+                  "name": "bgLabel",
+                  "fill": "#1a1a1a",
+                  "content": "Background #faf9f7",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "4tVfR",
+              "name": "primaryRow",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 12,
+                  "id": "ptKbP",
+                  "name": "primarySwatch",
+                  "fill": "#e07a5f",
+                  "width": 56,
+                  "height": 56
+                },
+                {
+                  "type": "text",
+                  "id": "9iQ42",
+                  "name": "primaryLabel",
+                  "fill": "#1a1a1a",
+                  "content": "Primary #e07a5f",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "m9iZT",
+              "name": "successRow",
+              "width": "fill_container",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 12,
+                  "id": "E0Tt7",
+                  "name": "successSwatch",
+                  "fill": "#81b29a",
+                  "width": 56,
+                  "height": 56
+                },
+                {
+                  "type": "text",
+                  "id": "twpYy",
+                  "name": "successLabel",
+                  "fill": "#1a1a1a",
+                  "content": "Success #81b29a",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "4s4hY",
+          "name": "divider2",
+          "fill": "#e5e5e5",
+          "width": "fill_container",
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "nQtSy",
+          "name": "typeTitle",
+          "fill": "#1a1a1a",
+          "content": "Typography",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "umwwY",
+          "name": "display",
+          "fill": "#1a1a1a",
+          "content": "Word Vault",
+          "fontFamily": "Inter",
+          "fontSize": 32,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "g25ID",
+          "name": "body",
+          "fill": "#6b6b6b",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "Your personal vocabulary learning companion",
+          "lineHeight": 1.5,
+          "fontFamily": "Inter",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "rectangle",
+          "id": "Qv44I",
+          "name": "divider3",
+          "fill": "#e5e5e5",
+          "width": "fill_container",
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "5529B",
+          "name": "cardTitle",
+          "fill": "#1a1a1a",
+          "content": "Word Card Component",
+          "fontFamily": "Inter",
+          "fontSize": 18,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "7gWif",
+          "name": "wordCard",
+          "width": "fill_container",
+          "fill": "#ffffff",
+          "cornerRadius": 16,
+          "stroke": {
+            "thickness": 1,
+            "fill": "#e5e5e5"
+          },
+          "layout": "vertical",
+          "gap": 12,
+          "padding": 16,
+          "children": [
+            {
+              "type": "frame",
+              "id": "adcIh",
+              "name": "cardHeader",
+              "width": "fill_container",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "NVfBJ",
+                  "name": "cardWordSection",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "iQnoC",
+                      "name": "cardWord",
+                      "fill": "#1a1a1a",
+                      "content": "ephemeral",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "AABec",
+                      "name": "cardPhonetic",
+                      "fill": "#6b6b6b",
+                      "content": "/əˈfem(ə)rəl/",
+                      "fontFamily": "Inter",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qnahB",
+                  "name": "cardStars",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "bjoew",
+                      "name": "star1",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "star",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#e07a5f"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "w2rHN",
+                      "name": "star2",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "star",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#e07a5f"
+                    },
+                    {
+                      "type": "icon_font",
+                      "id": "utpvB",
+                      "name": "star3",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "star",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#e5e5e5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "ePDcg",
+              "name": "cardMeaning",
+              "fill": "#6b6b6b",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "lasting for a very short time",
+              "lineHeight": 1.4,
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

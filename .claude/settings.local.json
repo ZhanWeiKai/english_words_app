@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(brainstorming)",
+      "Skill(frontend-design)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Skill(subagent-driven-development)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

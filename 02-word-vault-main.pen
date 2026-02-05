@@ -1,0 +1,1879 @@
+{
+  "version": "2.7",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "OdFnL",
+      "x": 100,
+      "y": 100,
+      "name": "Word Vault - Main Screen",
+      "width": 393,
+      "height": 852,
+      "fill": "#faf9f7",
+      "cornerRadius": 50,
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "vL08m",
+          "name": "statusBar",
+          "width": "fill_container",
+          "height": 54,
+          "padding": [
+            16,
+            32,
+            8,
+            32
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "qvuGV",
+              "name": "statusTime",
+              "fill": "#1a1a1a",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "vt5x6",
+              "name": "statusIcons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "yMpGJ",
+                  "name": "signalIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "signal_cellular_alt",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#1a1a1a"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "QRrKC",
+                  "name": "wifiIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "wifi",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#1a1a1a"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "Nnu8v",
+                  "name": "batteryIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "battery_full",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#1a1a1a"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "7PrXk",
+          "name": "header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 16,
+          "padding": [
+            8,
+            24,
+            16,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "BHLvE",
+              "name": "headerTop",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "y2OYf",
+                  "name": "titleSection",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "3Noec",
+                      "name": "appTitle",
+                      "fill": "#1a1a1a",
+                      "content": "Word Vault",
+                      "fontFamily": "Inter",
+                      "fontSize": 32,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DYW4b",
+                      "name": "wordCount",
+                      "fill": "#6b6b6b",
+                      "content": "12 words in your collection",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 12,
+                  "id": "lmbf1",
+                  "name": "settingsBtn",
+                  "fill": "#ffffff",
+                  "width": 40,
+                  "height": 40,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GAeaM",
+              "name": "searchBar",
+              "width": "fill_container",
+              "height": 48,
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "gap": 12,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "RnhTZ",
+                  "name": "searchIcon",
+                  "width": 24,
+                  "height": 24,
+                  "iconFontName": "search",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 400,
+                  "fill": "#6b6b6b"
+                },
+                {
+                  "type": "text",
+                  "id": "YRQ2d",
+                  "name": "searchInput",
+                  "fill": "#6b6b6b",
+                  "content": "Search words...",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qZyF5",
+              "name": "filterTags",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "9FThB",
+                  "name": "allTag",
+                  "fill": "#e07a5f",
+                  "cornerRadius": 20,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "RUp8E",
+                      "name": "allTagText",
+                      "fill": "#ffffff",
+                      "content": "All",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "5Nkzo",
+                      "name": "allTagCount",
+                      "fill": "#ffffff",
+                      "content": "12",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "5ri3J",
+                  "name": "learningTag",
+                  "fill": "#ffffff",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "yn6UK",
+                      "name": "learningTagText",
+                      "fill": "#6b6b6b",
+                      "content": "Learning",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "kcAK6",
+                      "name": "learningTagCount",
+                      "fill": "#6b6b6b",
+                      "content": "5",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "w3fiK",
+                  "name": "masteredTag",
+                  "fill": "#ffffff",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "uzQUN",
+                      "name": "masteredTagText",
+                      "fill": "#6b6b6b",
+                      "content": "Mastered",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "5O6cz",
+                      "name": "masteredTagCount",
+                      "fill": "#6b6b6b",
+                      "content": "7",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "jlU05",
+          "name": "Word List",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            24,
+            100,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "0EJ84",
+              "name": "card1",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "B6w4G",
+                  "name": "card1Header",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "OfrCP",
+                      "name": "card1WordSection",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "VAPB4",
+                          "name": "card1Word",
+                          "fill": "#1a1a1a",
+                          "content": "ephemeral",
+                          "fontFamily": "Inter",
+                          "fontSize": 20,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "jIpHx",
+                          "name": "card1Phonetic",
+                          "fill": "#6b6b6b",
+                          "content": "/əˈfem(ə)rəl/",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "4ddYj",
+                      "name": "card1Stars",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "v7BN0",
+                          "name": "card1Star1",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e07a5f"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "TC4Sv",
+                          "name": "card1Star2",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e07a5f"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "MU14h",
+                          "name": "card1Star3",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e5e5e5"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "QtdKF",
+                  "name": "card1Meaning",
+                  "fill": "#6b6b6b",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "lasting for a very short time",
+                  "lineHeight": 1.4,
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fz2fQ",
+              "name": "card2",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "GRVzH",
+                  "name": "card2Header",
+                  "width": "fill_container",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kiR3A",
+                      "name": "card2WordSection",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Ksh2V",
+                          "name": "card2Word",
+                          "fill": "#1a1a1a",
+                          "content": "serendipity",
+                          "fontFamily": "Inter",
+                          "fontSize": 20,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "JLuvo",
+                          "name": "card2Phonetic",
+                          "fill": "#6b6b6b",
+                          "content": "/ˌserənˈdipədē/",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "cJxYp",
+                      "name": "card2Stars",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "DgqL4",
+                          "name": "card2Star1",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e07a5f"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "S6kH0",
+                          "name": "card2Star2",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e5e5e5"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "YLxqI",
+                          "name": "card2Star3",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e5e5e5"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "oMPFg",
+                  "name": "card2Meaning",
+                  "fill": "#6b6b6b",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "finding something good without looking for it",
+                  "lineHeight": 1.4,
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "QFp6H",
+              "name": "card3",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mYmqp",
+                  "name": "card3Header",
+                  "width": "fill_container",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "0RHPt",
+                      "name": "card3WordSection",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "HbWFs",
+                          "name": "card3Word",
+                          "fill": "#1a1a1a",
+                          "content": "ubiquitous",
+                          "fontFamily": "Inter",
+                          "fontSize": 20,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "qPDqF",
+                          "name": "card3Phonetic",
+                          "fill": "#6b6b6b",
+                          "content": "/yo͞oˈbikwədəs/",
+                          "fontFamily": "Inter",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ncDl3",
+                      "name": "card3Stars",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "icon_font",
+                          "id": "KfVuk",
+                          "name": "card3Star1",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e07a5f"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "CPSuF",
+                          "name": "card3Star2",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e07a5f"
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "PP7g6",
+                          "name": "card3Star3",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "star",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#e07a5f"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Izyo2",
+                  "name": "card3Meaning",
+                  "fill": "#6b6b6b",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "present, appearing, or found everywhere",
+                  "lineHeight": 1.4,
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "s1tLp",
+          "name": "Floating Buttons",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "none",
+          "children": [
+            {
+              "type": "frame",
+              "id": "a4DRa",
+              "x": 317,
+              "y": 132,
+              "name": "AI Assistant Button",
+              "width": 44,
+              "height": 44,
+              "fill": "#1a1a1a",
+              "cornerRadius": 22,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#00000015",
+                "offset": {
+                  "x": 0,
+                  "y": 4
+                },
+                "blur": 12
+              },
+              "gap": 8,
+              "padding": 12,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "Xpf8y",
+                  "name": "aiBtnIcon",
+                  "width": 20,
+                  "height": 20,
+                  "iconFontName": "smart_toy",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 400,
+                  "fill": "#ffffff"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s6CMj",
+              "x": 293,
+              "y": 734,
+              "name": "Train Button",
+              "width": 72,
+              "height": 72,
+              "fill": "#e07a5f",
+              "cornerRadius": 36,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#e07a5f40",
+                "offset": {
+                  "x": 0,
+                  "y": 6
+                },
+                "blur": 20
+              },
+              "gap": 8,
+              "padding": [
+                16,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "wvOgj",
+                  "name": "trainBtnIcon",
+                  "width": 28,
+                  "height": 28,
+                  "iconFontName": "school",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#ffffff"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "qh9Z4",
+          "name": "Bottom Safe Area",
+          "width": "fill_container",
+          "height": 34,
+          "layout": "vertical",
+          "padding": [
+            8,
+            24,
+            0,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "t6i8k",
+              "name": "homeIndicator",
+              "fill": "#1a1a1a",
+              "width": 134,
+              "height": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "OuCQp",
+      "x": 100,
+      "y": 100,
+      "name": "Word Vault - Selection Mode",
+      "width": 393,
+      "height": 852,
+      "fill": "#faf9f7",
+      "cornerRadius": 50,
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "YIZZj",
+          "name": "statusBar",
+          "width": "fill_container",
+          "height": 54,
+          "padding": [
+            16,
+            32,
+            8,
+            32
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "mFDZ9",
+              "name": "statusTime",
+              "fill": "#1a1a1a",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "UGWDK",
+              "name": "statusIcons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "3sfOc",
+                  "name": "signalIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "signal_cellular_alt",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#1a1a1a"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "zlNCM",
+                  "name": "wifiIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "wifi",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#1a1a1a"
+                },
+                {
+                  "type": "icon_font",
+                  "id": "mcYXF",
+                  "name": "batteryIcon",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "battery_full",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 500,
+                  "fill": "#1a1a1a"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NNlOz",
+          "name": "header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            8,
+            16,
+            16,
+            16
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "npwYO",
+              "name": "headerTop",
+              "width": "fill_container",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dMJIO",
+                  "name": "cancelBtn",
+                  "height": 36,
+                  "fill": "#ffffff",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "QeXWP",
+                      "name": "cancelText",
+                      "fill": "#6b6b6b",
+                      "content": "Cancel",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "UxLSS",
+                  "name": "selectionTitle",
+                  "fill": "#1a1a1a",
+                  "content": "Selected 2/12",
+                  "fontFamily": "Inter",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "2MFKl",
+                  "name": "selectAllBtn",
+                  "height": 36,
+                  "fill": "#ffffff",
+                  "cornerRadius": 12,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "hrlqp",
+                      "name": "selectAllText",
+                      "fill": "#1a1a1a",
+                      "content": "Select All",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "AdriF",
+              "name": "searchBar",
+              "width": "fill_container",
+              "height": 48,
+              "fill": "#f5f5f5",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "gap": 12,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon_font",
+                  "id": "1cCQ1",
+                  "name": "searchIcon",
+                  "width": 24,
+                  "height": 24,
+                  "iconFontName": "search",
+                  "iconFontFamily": "Material Symbols Rounded",
+                  "weight": 400,
+                  "fill": "#cccccc"
+                },
+                {
+                  "type": "text",
+                  "id": "YCc8R",
+                  "name": "searchInput",
+                  "fill": "#cccccc",
+                  "content": "Search disabled during selection",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "3OdPn",
+              "name": "filterTags",
+              "width": "fill_container",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "InER9",
+                  "name": "allTag",
+                  "fill": "#e07a5f",
+                  "cornerRadius": 20,
+                  "gap": 6,
+                  "padding": [
+                    8,
+                    16
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "XfC7p",
+                      "name": "allTagText",
+                      "fill": "#ffffff",
+                      "content": "All",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "sUUbz",
+                      "name": "allTagCount",
+                      "fill": "#ffffff",
+                      "content": "12",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Tku0c",
+          "name": "wordList",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 12,
+          "padding": [
+            0,
+            16,
+            100,
+            16
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "a1JaI",
+              "name": "selectedCard1",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 2,
+                "fill": "#e07a5f"
+              },
+              "gap": 12,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KBMDF",
+                  "name": "checkbox1",
+                  "width": 24,
+                  "height": 24,
+                  "fill": "#e07a5f",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "HqXEK",
+                      "name": "checkIcon1",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "check",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 600,
+                      "fill": "#ffffff"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "btKdE",
+                  "name": "card1Content",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "C8kkR",
+                      "name": "card1Header",
+                      "width": "fill_container",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "G3PEk",
+                          "name": "card1WordSection",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "7P5Fb",
+                              "name": "card1Word",
+                              "fill": "#1a1a1a",
+                              "content": "ephemeral",
+                              "fontFamily": "Inter",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "InIJ6",
+                              "name": "card1Phonetic",
+                              "fill": "#6b6b6b",
+                              "content": "/əˈfem(ə)rəl/",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "7I3eK",
+                          "name": "card1Stars",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "uf7zQ",
+                              "name": "card1Star1",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "1tvyj",
+                              "name": "card1Star2",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "oo6OI",
+                              "name": "card1Star3",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e5e5e5"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "fSWzy",
+                      "name": "card1Meaning",
+                      "fill": "#6b6b6b",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "lasting for a very short time",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bWAdG",
+              "name": "selectedCard2",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 2,
+                "fill": "#e07a5f"
+              },
+              "gap": 12,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "fetGS",
+                  "name": "checkbox2",
+                  "width": 24,
+                  "height": 24,
+                  "fill": "#e07a5f",
+                  "cornerRadius": 6,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "vNHpy",
+                      "name": "checkIcon2",
+                      "width": 18,
+                      "height": 18,
+                      "iconFontName": "check",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 600,
+                      "fill": "#ffffff"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "9R8WA",
+                  "name": "card2Content",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "XpJ8j",
+                      "name": "card2Header",
+                      "width": "fill_container",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "z4kpT",
+                          "name": "card2WordSection",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "nKf9R",
+                              "name": "card2Word",
+                              "fill": "#1a1a1a",
+                              "content": "serendipity",
+                              "fontFamily": "Inter",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "WbY5u",
+                              "name": "card2Phonetic",
+                              "fill": "#6b6b6b",
+                              "content": "/ˌserənˈdipədē/",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "5X4eF",
+                          "name": "card2Stars",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "Qe52R",
+                              "name": "card2Star1",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "EsPZC",
+                              "name": "card2Star2",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e5e5e5"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "0W7kR",
+                              "name": "card2Star3",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e5e5e5"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "XoAlc",
+                      "name": "card2Meaning",
+                      "fill": "#6b6b6b",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "finding something good without looking for it",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xITof",
+              "name": "unselectedCard3",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "gap": 12,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "laRm0",
+                  "name": "checkbox3",
+                  "width": 24,
+                  "height": 24,
+                  "fill": "#ffffff",
+                  "cornerRadius": 6,
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#e5e5e5"
+                  },
+                  "justifyContent": "center",
+                  "alignItems": "center"
+                },
+                {
+                  "type": "frame",
+                  "id": "LXxrW",
+                  "name": "card3Content",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "oug27",
+                      "name": "card3Header",
+                      "width": "fill_container",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "AaIQI",
+                          "name": "card3WordSection",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "JO0U5",
+                              "name": "card3Word",
+                              "fill": "#1a1a1a",
+                              "content": "ubiquitous",
+                              "fontFamily": "Inter",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "tUFUm",
+                              "name": "card3Phonetic",
+                              "fill": "#6b6b6b",
+                              "content": "/yo͞oˈbikwədəs/",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "H74hf",
+                          "name": "card3Stars",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "J8urO",
+                              "name": "card3Star1",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "F0Svt",
+                              "name": "card3Star2",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "E1lj1",
+                              "name": "card3Star3",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "cejOW",
+                      "name": "card3Meaning",
+                      "fill": "#6b6b6b",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "present, appearing, or found everywhere",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "VK52y",
+              "name": "unselectedCard4",
+              "width": "fill_container",
+              "fill": "#ffffff",
+              "cornerRadius": 16,
+              "stroke": {
+                "thickness": 1,
+                "fill": "#e5e5e5"
+              },
+              "gap": 12,
+              "padding": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "JYsxB",
+                  "name": "checkbox4",
+                  "width": 24,
+                  "height": 24,
+                  "fill": "#ffffff",
+                  "cornerRadius": 6,
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#e5e5e5"
+                  },
+                  "justifyContent": "center",
+                  "alignItems": "center"
+                },
+                {
+                  "type": "frame",
+                  "id": "QilEn",
+                  "name": "card4Content",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "QhAG5",
+                      "name": "card4Header",
+                      "width": "fill_container",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Yh0TI",
+                          "name": "card4WordSection",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "i7D1e",
+                              "name": "card4Word",
+                              "fill": "#1a1a1a",
+                              "content": "eloquent",
+                              "fontFamily": "Inter",
+                              "fontSize": 20,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "TVJUq",
+                              "name": "card4Phonetic",
+                              "fill": "#6b6b6b",
+                              "content": "/ˈeləkwənt/",
+                              "fontFamily": "Inter",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "6QVRX",
+                          "name": "card4Stars",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "mEFxT",
+                              "name": "card4Star1",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "js8EW",
+                              "name": "card4Star2",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "tEB4P",
+                              "name": "card4Star3",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "7CRiJ",
+                              "name": "card4Star4",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "EuRte",
+                              "name": "card4Star5",
+                              "width": 20,
+                              "height": 20,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 400,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "hvm7E",
+                      "name": "card4Meaning",
+                      "fill": "#6b6b6b",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "fluent or persuasive in speaking or writing",
+                      "lineHeight": 1.4,
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PDcrm",
+          "name": "Batch Train Button",
+          "width": 345,
+          "height": 72,
+          "fill": "#e07a5f",
+          "cornerRadius": 36,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#e07a5f40",
+            "offset": {
+              "x": 0,
+              "y": 6
+            },
+            "blur": 20
+          },
+          "gap": 12,
+          "padding": [
+            16,
+            24
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "558ZN",
+              "name": "trainIcon",
+              "width": 28,
+              "height": 28,
+              "iconFontName": "school",
+              "iconFontFamily": "Material Symbols Rounded",
+              "weight": 500,
+              "fill": "#ffffff"
+            },
+            {
+              "type": "text",
+              "id": "U8W19",
+              "name": "trainText",
+              "fill": "#ffffff",
+              "content": "Train 2 words",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "600"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "TkEeU",
+          "name": "AI Assistant Button",
+          "opacity": 0.5,
+          "width": 44,
+          "height": 44,
+          "fill": "#1a1a1a",
+          "cornerRadius": 22,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000015",
+            "offset": {
+              "x": 0,
+              "y": 4
+            },
+            "blur": 12
+          },
+          "gap": 8,
+          "padding": 12,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon_font",
+              "id": "l7j2X",
+              "name": "aiBtnIcon",
+              "width": 20,
+              "height": 20,
+              "iconFontName": "smart_toy",
+              "iconFontFamily": "Material Symbols Rounded",
+              "weight": 400,
+              "fill": "#ffffff"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BQwY2",
+          "name": "bottomSafe",
+          "width": "fill_container",
+          "height": 34,
+          "layout": "vertical",
+          "padding": [
+            8,
+            24,
+            0,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "rectangle",
+              "cornerRadius": 3,
+              "id": "dPEjg",
+              "name": "homeIndicator",
+              "fill": "#1a1a1a",
+              "width": 134,
+              "height": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "75JIr",
+      "x": 550,
+      "y": 100,
+      "name": "Selection Mode Note",
+      "width": 400,
+      "height": 300,
+      "fill": "#ffffff",
+      "cornerRadius": 16,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#00000008",
+        "offset": {
+          "x": 0,
+          "y": 4
+        },
+        "blur": 20
+      },
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "text",
+          "id": "VcV97",
+          "name": "noteTitle",
+          "fill": "#1a1a1a",
+          "content": "Selection Mode Features",
+          "fontFamily": "Inter",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "zYaEW",
+          "name": "note1",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Long press card to enter selection mode",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "GsGkc",
+          "name": "note2",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Tap cards to select/deselect",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "upg9P",
+          "name": "note3",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Selected cards: orange border + checkmark",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "TCutq",
+          "name": "note4",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Unselected: gray border + empty checkbox",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "rUTqi",
+          "name": "note5",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Bottom button shows selected count",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "dEXK9",
+          "name": "note6",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Train button leads to Scene Practice",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "PmUJg",
+          "name": "note7",
+          "fill": "#1a1a1a",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "• Target words: all selected words",
+          "lineHeight": 1.6,
+          "fontFamily": "Inter",
+          "fontSize": 15,
+          "fontWeight": "normal"
+        }
+      ]
+    }
+  ]
+}

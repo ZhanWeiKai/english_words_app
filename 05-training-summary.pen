@@ -1,0 +1,740 @@
+{
+  "version": "2.7",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "BEiDT",
+          "x": 100,
+          "y": 100,
+          "name": "Training Summary Screen",
+          "width": 393,
+          "height": 852,
+          "fill": "#faf9f7",
+          "cornerRadius": 50,
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "QKUSA",
+              "name": "statusBar",
+              "width": "fill_container",
+              "height": 54,
+              "padding": [
+                16,
+                32,
+                8,
+                32
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dybzF",
+                  "name": "timeText",
+                  "fill": "#1a1a1a",
+                  "content": "9:41",
+                  "fontFamily": "Inter",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GEuQl",
+              "name": "header",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "padding": [
+                8,
+                24,
+                24,
+                24
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yFNNx",
+                  "name": "celebrationIcon",
+                  "fill": "#1a1a1a",
+                  "content": "Great Session!",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 32,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "DCeyh",
+                  "name": "subtitleText",
+                  "fill": "#6b6b6b",
+                  "content": "You practiced 3 words and made progress!",
+                  "lineHeight": 1.4,
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ysazM",
+              "name": "content",
+              "width": "fill_container",
+              "height": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "padding": [
+                0,
+                24,
+                24,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "I5zQe",
+                  "name": "summaryCard",
+                  "width": "fill_container",
+                  "fill": "#ffffff",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 24,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "AQO5N",
+                      "name": "summaryTitle",
+                      "fill": "#1a1a1a",
+                      "content": "Progress Summary",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "5IjiT",
+                      "name": "wordProgress1",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "HFHQh",
+                          "name": "word1Name",
+                          "fill": "#1a1a1a",
+                          "content": "ephemeral",
+                          "fontFamily": "Inter",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "IhzbJ",
+                          "name": "word1StarsBefore",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "MjNsp",
+                              "name": "star1a",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "8CM54",
+                              "name": "star1b",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "YtgJH",
+                          "name": "arrowIcon",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "arrow_forward",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#6b6b6b"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Ycgqt",
+                          "name": "word1StarsAfter",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "qaWbe",
+                              "name": "star1c",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "SF3EI",
+                              "name": "star1d",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "YuaDm",
+                              "name": "star1e",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "j3KL0",
+                      "name": "wordProgress2",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "WL7tH",
+                          "name": "word2Name",
+                          "fill": "#1a1a1a",
+                          "content": "serendipity",
+                          "fontFamily": "Inter",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "Okpzx",
+                          "name": "word2StarsBefore",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "arOGb",
+                              "name": "star2a",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "DniZI",
+                              "name": "star2b",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "sZeQN",
+                              "name": "star2c",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "yBspi",
+                          "name": "arrow2",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "arrow_forward",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#6b6b6b"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ugJXU",
+                          "name": "word2StarsAfter",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "LSAJd",
+                              "name": "star2d",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "NDe57",
+                              "name": "star2e",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "eckL5",
+                              "name": "star2f",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "KTb2h",
+                              "name": "star2g",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Wdl2U",
+                      "name": "wordProgress3",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "pF5ZT",
+                          "name": "word3Container",
+                          "width": 100,
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "GkjhW",
+                              "name": "word3Name",
+                              "fill": "#1a1a1a",
+                              "content": "ubiquitous",
+                              "fontFamily": "Inter",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "TQqDE",
+                              "name": "masteredBadge",
+                              "fill": "#81b29a",
+                              "cornerRadius": 12,
+                              "gap": 4,
+                              "padding": [
+                                4,
+                                8
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon_font",
+                                  "id": "o1ppT",
+                                  "name": "starIcon",
+                                  "width": 12,
+                                  "height": 12,
+                                  "iconFontName": "star",
+                                  "iconFontFamily": "Material Symbols Rounded",
+                                  "weight": 600,
+                                  "fill": "#ffffff"
+                                },
+                                {
+                                  "type": "text",
+                                  "id": "fYbgt",
+                                  "name": "masteredText",
+                                  "fill": "#ffffff",
+                                  "content": "Mastered!",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 11,
+                                  "fontWeight": "600"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "aseiO",
+                          "name": "word3StarsBefore",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "95hQl",
+                              "name": "star3a",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "6KfxH",
+                              "name": "star3b",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "V5BcS",
+                              "name": "star3c",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "xrsDT",
+                              "name": "star3d",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "icon_font",
+                          "id": "feTh1",
+                          "name": "arrow3",
+                          "width": 20,
+                          "height": 20,
+                          "iconFontName": "arrow_forward",
+                          "iconFontFamily": "Material Symbols Rounded",
+                          "weight": 400,
+                          "fill": "#6b6b6b"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "5J1pO",
+                          "name": "word3StarsAfter",
+                          "gap": 3,
+                          "children": [
+                            {
+                              "type": "icon_font",
+                              "id": "te8hc",
+                              "name": "star3e",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "SzOTv",
+                              "name": "star3f",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "TM3tu",
+                              "name": "star3g",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "TKtu7",
+                              "name": "star3h",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            },
+                            {
+                              "type": "icon_font",
+                              "id": "iJqJ9",
+                              "name": "star3i",
+                              "width": 16,
+                              "height": 16,
+                              "iconFontName": "star",
+                              "iconFontFamily": "Material Symbols Rounded",
+                              "weight": 500,
+                              "fill": "#e07a5f"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hFHNR",
+                  "name": "achievementCard",
+                  "width": "fill_container",
+                  "fill": "#fff5f2",
+                  "cornerRadius": 20,
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#e07a5f"
+                  },
+                  "gap": 16,
+                  "padding": 20,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "yXjLJ",
+                      "name": "achievementIcon",
+                      "width": 48,
+                      "height": 48,
+                      "iconFontName": "military_tech",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#e07a5f"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "P3MSa",
+                      "name": "achievementContent",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "f1cid",
+                          "name": "achievementTitle",
+                          "fill": "#1a1a1a",
+                          "content": "Achievement Unlocked!",
+                          "fontFamily": "Inter",
+                          "fontSize": 16,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "text",
+                          "id": "MJwkg",
+                          "name": "achievementDesc",
+                          "fill": "#6b6b6b",
+                          "content": "Vocabulary Voyager — mastered 10 words",
+                          "lineHeight": 1.4,
+                          "fontFamily": "Inter",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "M1r90",
+              "name": "buttonContainer",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                16,
+                24,
+                24,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "y3sgw",
+                  "name": "continueButton",
+                  "width": "fill_container",
+                  "fill": "#e07a5f",
+                  "cornerRadius": 16,
+                  "gap": 8,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "JlW4s",
+                      "name": "continueIcon",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "school",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 500,
+                      "fill": "#ffffff"
+                    },
+                    {
+                      "type": "text",
+                      "id": "iGxD9",
+                      "name": "continueText",
+                      "fill": "#ffffff",
+                      "content": "Continue Learning",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "UgIXl",
+                  "name": "homeButton",
+                  "width": "fill_container",
+                  "fill": "#ffffff",
+                  "cornerRadius": 16,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#e5e5e5"
+                  },
+                  "gap": 8,
+                  "padding": [
+                    16,
+                    24
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon_font",
+                      "id": "Zwsgf",
+                      "name": "homeIcon",
+                      "width": 20,
+                      "height": 20,
+                      "iconFontName": "home",
+                      "iconFontFamily": "Material Symbols Rounded",
+                      "weight": 400,
+                      "fill": "#1a1a1a"
+                    },
+                    {
+                      "type": "text",
+                      "id": "96B5u",
+                      "name": "homeText",
+                      "fill": "#1a1a1a",
+                      "content": "Back to Home",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Jsy7L",
+              "name": "safeArea",
+              "width": "fill_container",
+              "height": 34,
+              "layout": "vertical",
+              "padding": [
+                8,
+                24,
+                0,
+                24
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 3,
+                  "id": "u9ZdW",
+                  "name": "homeIndicator",
+                  "fill": "#1a1a1a",
+                  "width": 134,
+                  "height": 5
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
