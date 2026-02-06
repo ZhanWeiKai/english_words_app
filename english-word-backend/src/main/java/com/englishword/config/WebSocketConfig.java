@@ -1,31 +1,35 @@
 package com.englishword.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 /**
  * WebSocket配置
+ *
+ * 功能：
+ * - 注册WebSocket端点
+ * - 配置WebSocket处理器
+ * - 支持跨域访问
  */
 @Configuration
-@EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+@EnableWebSocket
+@RequiredArgsConstructor
+public class WebSocketConfig implements WebSocketConfigurer {
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 注册WebSocket端点
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
-    }
+    private final WebSocketHandler webSocketHandler;
 
+    /**
+     * 注册WebSocket端点
+     *
+     * @param registry WebSocket处理器注册表
+     */
     @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 启用简单消息代理
-        registry.enableSimpleBroker("/topic", "/queue");
-        // 设置应用程序目的地前缀
-        registry.setApplicationDestinationPrefixes("/app");
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(webSocketHandler, "/ws")
+                .setAllowedOrigins("*")  // 允许跨域（生产环境应限制具体域名）
+                .withSockJS();            // 启用SockJS（降级支持）
     }
 }
