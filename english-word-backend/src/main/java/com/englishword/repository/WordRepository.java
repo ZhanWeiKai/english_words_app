@@ -12,29 +12,62 @@ import java.util.List;
 
 /**
  * 单词数据访问接口
+ *
+ * 对应实体：Word
+ * 对应表：word
  */
 @Repository
-public interface WordRepository extends JpaRepository<Word, Long> {
+public interface WordRepository extends JpaRepository<Word, String> {
 
     /**
-     * 根据单词查找
+     * 根据用户ID和状态查询单词列表
+     *
+     * @param userId 用户ID
+     * @param status 状态（LEARNING/MASTERED）
+     * @param pageable 分页对象
+     * @return 单词分页列表
      */
-    Word findByWord(String word);
+    Page<Word> findByUserIdAndStatus(String userId, String status, Pageable pageable);
 
     /**
-     * 搜索单词（模糊查询）
+     * 根据用户ID查询单词列表（所有状态）
+     *
+     * @param userId 用户ID
+     * @param pageable 分页对象
+     * @return 单词分页列表
      */
-    Page<Word> findByWordContainingIgnoreCase(String keyword, Pageable pageable);
+    Page<Word> findByUserId(String userId, Pageable pageable);
 
     /**
-     * 全文搜索单词
+     * 根据用户ID和掌握程度查询
+     *
+     * @param userId 用户ID
+     * @param masteryLevel 掌握程度（1-5）
+     * @param pageable 分页对象
+     * @return 单词分页列表
      */
-    @Query("SELECT w FROM Word w WHERE w.word LIKE %:keyword% OR w.definition LIKE %:keyword%")
-    Page<Word> searchWords(@Param("keyword") String keyword, Pageable pageable);
+    Page<Word> findByUserIdAndMasteryLevel(String userId, Integer masteryLevel, Pageable pageable);
 
     /**
-     * 随机获取单词
+     * 根据用户ID搜索单词（模糊查询）
+     *
+     * @param userId 用户ID
+     * @param keyword 关键词
+     * @param pageable 分页对象
+     * @return 单词分页列表
      */
-    @Query(value = "SELECT * FROM words ORDER BY RAND() LIMIT :limit", nativeQuery = true)
-    List<Word> findRandomWords(@Param("limit") int limit);
+    @Query("SELECT w FROM Word w WHERE w.userId = :userId AND " +
+           "(w.word LIKE %:keyword% OR w.definition LIKE %:keyword%)")
+    Page<Word> searchByUserId(@Param("userId") String userId,
+                              @Param("keyword") String keyword,
+                              Pageable pageable);
+
+    /**
+     * 统计用户单词数量（按状态）
+     *
+     * @param userId 用户ID
+     * @param status 状态
+     * @return 单词数量
+     */
+    long countByUserIdAndStatus(String userId, String status);
 }

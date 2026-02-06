@@ -6,46 +6,84 @@ import java.time.LocalDateTime;
 
 /**
  * 单词实体类
+ *
+ * 对应数据库表：word
  */
 @Data
 @Entity
-@Table(name = "words")
+@Table(name = "word")
 public class Word {
 
+    /**
+     * 单词唯一ID (UUID)
+     */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "word_id", length = 255)
+    private String wordId;
 
+    /**
+     * 所属用户ID
+     */
+    @Column(name = "user_id", nullable = false, length = 255)
+    private String userId;
+
+    /**
+     * 单词（小写）
+     */
     @Column(nullable = false, length = 100)
     private String word;
 
-    @Column(length = 50)
-    private String phonetic;
+    /**
+     * 音标（IPA）
+     */
+    @Column(length = 200)
+    private String pronunciation;
 
-    @Column(length = 20)
+    /**
+     * 词性（n./v./adj./adv.等）
+     */
+    @Column(name = "part_of_speech", length = 50)
     private String partOfSpeech;
 
+    /**
+     * 中文释义
+     */
     @Column(columnDefinition = "TEXT")
     private String definition;
 
-    @Column(columnDefinition = "TEXT")
-    private String example;
+    /**
+     * 例句（英文）
+     */
+    @Column(name = "example_sentence", columnDefinition = "TEXT")
+    private String exampleSentence;
 
-    @Column(columnDefinition = "TEXT")
-    private String synonyms;
+    /**
+     * 例句翻译
+     */
+    @Column(name = "example_translation", columnDefinition = "TEXT")
+    private String exampleTranslation;
 
-    @Column(columnDefinition = "TEXT")
-    private String antonyms;
+    /**
+     * 掌握程度（1-5星）
+     */
+    @Column(name = "mastery_level", columnDefinition = "INT DEFAULT 1")
+    private Integer masteryLevel = 1;
 
-    @Column(columnDefinition = "TEXT")
-    private String wordRoot;
+    /**
+     * 状态：LEARNING=学习中，MASTERED=已掌握
+     */
+    @Column(length = 20, columnDefinition = "VARCHAR(20) DEFAULT 'LEARNING'")
+    private String status = "LEARNING";
 
-    @Column(columnDefinition = "TEXT")
-    private String memoryTip;
-
+    /**
+     * 添加时间
+     */
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    /**
+     * 更新时间
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -53,10 +91,38 @@ public class Word {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        // 如果wordId为空，生成UUID
+        if (wordId == null || wordId.isEmpty()) {
+            wordId = java.util.UUID.randomUUID().toString();
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 枚举：单词状态
+     */
+    public enum WordStatus {
+        LEARNING("LEARNING", "学习中"),
+        MASTERED("MASTERED", "已掌握");
+
+        private final String code;
+        private final String description;
+
+        WordStatus(String code, String description) {
+            this.code = code;
+            this.description = description;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 }
