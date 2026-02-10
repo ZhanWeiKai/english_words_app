@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#e07a5f</color>
+    <color name="primary_dark">#c66a52</color>
+    <color name="primary_light">#f4a48a</color>
+
+    <!-- Success Color -->
+    <color name="success">#81b29a</color>
+    <color name="success_dark">#6f9b84</color>
+
+    <!-- Background Colors -->
+    <color name="background">#faf9f7</color>
+    <color name="surface">#ffffff</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#2d3436</color>
+    <color name="text_secondary">#636e72</color>
+    <color name="text_hint">#b2bec3</color>
+
+    <!-- Status Colors -->
+    <color name="learning">#f4a48a</color>
+    <color name="mastered">#81b29a</color>
+
+    <!-- Other Colors -->
+    <color name="divider">#dfe6e9</color>
+    <color name="error">#d63031</color>
+    <color name="warning">#fdcb6e</color>
+    <color name="info">#74b9ff</color>
+
+    <!-- Mastery Stars -->
+    <color name="star_active">#f1c40f</color>
+    <color name="star_inactive">#dfe6e9</color>
+</resources>

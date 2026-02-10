@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme for Material 3 -->
+    <style name="Theme.EnglishWord" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/success</item>
+        <!-- Background -->
+        <item name="android:windowBackground">@color/background</item>
+        <!-- Status bar -->
+        <item name="android:statusBarColor">@color/background</item>
+    </style>
+</resources>
