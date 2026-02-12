@@ -11,7 +11,13 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(mvn clean compile:*)"
+      "Bash(mvn clean compile:*)",
+      "Bash(./gradlew:*)",
+      "Bash(adb:*)",
+      "Bash(gradlew.bat assembleDebug:*)",
+      "Bash(./gradlew.bat:*)",
+      "Skill(receiving-code-review)",
+      "Bash(git reset:*)"
     ]
   }
 }
