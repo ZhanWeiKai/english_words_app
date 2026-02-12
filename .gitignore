@@ -1,10 +1,12 @@
-# Java
-*.class
-*.jar
-*.war
-*.ear
+
+# Build outputs
+build/
 target/
-!.mvn/wrapper/maven-wrapper.jar
+*.class
+
+# Gradle
+.gradle/
+.gradletask/
 
 # IDE
 .idea/
@@ -12,32 +14,16 @@ target/
 .vscode/
 *.swp
 *.swo
-*~
-
-# Spring Boot
-application-local.yml
-application-local.properties
-
-# Logs
-logs/
-*.log
-
-# OS
-.DS_Store
-Thumbs.db
 
 # Temporary files
-*.tmp
-*.temp
-tmp*/
 tmpclaude*/
+tmp*/*.cwd
 
-# Pen files (large design files)
-*.pen.backup
+# Large generated files
+*.dex
+*.apk
+*.apq
 
-# Environment variables
-.env
-.env.local
+# Keep source files
+!android-word-app-java/android-word-app/app/src/
 
-# Docker
-docker-compose.override.yml
