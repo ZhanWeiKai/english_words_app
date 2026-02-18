@@ -239,7 +239,7 @@ fun AIChatScreen(
                     onInputChange = { inputText = it },
                     onSend = {
                         if (inputText.isNotBlank() && !isLoading) {
-                            val mode = if (isTrainingMode) "word_training" else "word_inquiry"
+                            val mode = if (isTrainingMode) "word_training" else "word_search"
                             val targetWord = if (isTrainingMode) selectedWords.firstOrNull()?.word else null
 
                             viewModel.sendMessage(
