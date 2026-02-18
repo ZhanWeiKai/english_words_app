@@ -87,13 +87,17 @@ data class ChatMessage(
     var conversationId: String? = null,
     var role: String? = null, // "user" or "assistant"
     var content: String? = null,
-    var createdAt: String? = null
+    var createdAt: String? = null,
+    var wordResults: List<WordResult>? = null  // For word_search mode
 ) {
     val isUser: Boolean
         get() = role == "user"
 
     val isAssistant: Boolean
         get() = role == "assistant"
+
+    val hasWordResults: Boolean
+        get() = !wordResults.isNullOrEmpty()
 }
 
 /**
@@ -102,7 +106,8 @@ data class ChatMessage(
 data class AIChatResponse(
     var conversationId: String? = null,
     var message: String? = null,
-    var suggestions: List<Suggestion>? = null
+    var suggestions: List<Suggestion>? = null,
+    var wordResults: List<WordResult>? = null  // For word_search mode
 ) {
     data class Suggestion(
         var type: String? = null,
@@ -117,8 +122,19 @@ data class AIChatResponse(
 data class AIChatRequest(
     var message: String? = null,
     var conversationId: String? = null,
-    var mode: String? = null,  // "word_inquiry" or "word_training"
+    var mode: String? = null,  // "word_inquiry", "word_training", or "word_search"
     var targetWord: String? = null,
     var scenario: String? = null,
     var trainingWords: List<String>? = null  // 训练单词列表
+)
+
+/**
+ * Word search result from AI
+ */
+data class WordResult(
+    var word: String? = null,
+    var phonetic: String? = null,
+    var partOfSpeech: String? = null,
+    var meaning: String? = null,
+    var example: String? = null
 )
