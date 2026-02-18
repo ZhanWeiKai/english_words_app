@@ -65,13 +65,15 @@ public class ZhipuAIServiceManualTest {
 
         String word = "ephemeral";
         String scenario = "在咖啡店谈论社交媒体趋势";
+        java.util.List<String> trainingWords = java.util.List.of("ephemeral", "inevitable", "sustainable");
 
         log.info("\n🎯 目标单词: {}", word);
         log.info("🎬 场景描述: {}", scenario);
+        log.info("📚 训练单词: {}", trainingWords);
         log.info("⏳ 正在调用智谱AI API...\n");
 
         long startTime = System.currentTimeMillis();
-        String response = zhipuAIService.practiceInScenario(word, scenario, null);
+        String response = zhipuAIService.practiceInScenario(word, scenario, trainingWords, null);
         long endTime = System.currentTimeMillis();
 
         log.info("✅ API调用成功!");

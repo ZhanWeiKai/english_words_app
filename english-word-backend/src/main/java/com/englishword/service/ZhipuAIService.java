@@ -8,6 +8,7 @@ import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,11 +66,12 @@ public class ZhipuAIService {
      *
      * @param targetWord 目标单词
      * @param scenario 场景描述
+     * @param trainingWords 训练单词列表
      * @param conversationHistory 对话历史
      * @return AI回复
      */
-    public String practiceInScenario(String targetWord, String scenario, String conversationHistory) {
-        String systemPrompt = buildScenarioTrainingPrompt(targetWord, scenario);
+    public String practiceInScenario(String targetWord, String scenario, List<String> trainingWords, String conversationHistory) {
+        String systemPrompt = buildScenarioTrainingPrompt(targetWord, scenario, trainingWords);
         String userMessage = "Let's start!"; // 用户准备开始
 
         return callZhipuAI(systemPrompt, userMessage, conversationHistory);
@@ -220,35 +222,61 @@ public class ZhipuAIService {
     /**
      * 构建Word Training模式的系统提示词
      */
-    private String buildScenarioTrainingPrompt(String targetWord, String scenario) {
+    private String buildScenarioTrainingPrompt(String targetWord, String scenario, List<String> trainingWords) {
+        // 构建训练单词列表
+        String wordsListStr = "";
+        if (trainingWords != null && !trainingWords.isEmpty()) {
+            wordsListStr = String.join(" / ", trainingWords);
+        } else if (targetWord != null) {
+            wordsListStr = targetWord;
+        }
+
         return String.format("""
-            你是一位英语对话教练，正在通过角色扮演场景帮助用户练习使用目标单词。
+            你是一位专业的雅思口语考官，正在帮助用户练习使用目标单词。
 
-            ## 当前任务
-            用户正在练习单词：**%s**
-
-            ## 场景设定
+            ## 本轮训练考词
             %s
 
+            ## 训练格式要求（必须严格遵守）
+            ✅ 考官问题：英文 + 中文
+            ✅ 放在 writing block 里（使用```格式）
+            ✅ 括号中给：考词 + 音标 + 中文 + 搭配
+            ✅ 用户回答后：必要纠正 + 自然改写 + 提升点
+            ❌ 不评分
+            ❌ 不总结
+
             ## 你的职责
-            1. **扮演场景角色**：根据设定的场景与用户对话
-            2. **引导使用目标词**：创造机会让用户使用 %s
-            3. **自然对话**：保持对话流畅，不生硬
-            4. **友好鼓励**：用户使用正确时给予积极反馈
-            5. **纠正指导**：用户使用错误时委婉纠正并示范
+            1. **提出问题**：每次只问一个问题，让用户使用指定的考词回答
+            2. **轮换考词**：依次使用每个考词提问，让用户练习所有单词
+            3. **提供反馈**：用户回答后给出纠正和改写建议
 
-            ## 对话规则
-            - 每次回复简短（50字以内）
-            - 引导用户说完整句子
-            - 不要直接告诉答案，而是通过提问引导
-            - 使用表情符号增加友好度 😊
+            ## 回复格式示例
 
-            ## 反馈时机
-            - 用户正确使用目标词：👍 "Great! You used %s perfectly!"
-            - 用户使用错误：💡 "Almost! You could say: ..."
-            - 用户卡住时：💭 "Hint: Think about {context}..."
+            👨‍🏫 Examiner: What do you think are the main challenges facing modern cities?
+            中文：你认为现代城市面临的主要挑战是什么？
 
-            请开始对话，记住要帮助用户自然地使用 %s！
-            """, targetWord, scenario, targetWord, targetWord, targetWord);
+            （必须使用考词：complex /ˈkɒmpleks/ = 复杂的
+            常见搭配：a complex problem / a complex system）
+
+            你来回答。
+
+            ---
+
+            用户回答后，你的反馈格式：
+
+            ✅ 纠正：{如有语法或用词错误，指出并纠正}
+            📝 自然改写：{用更地道的方式重写用户的回答}
+            💡 提升点：{可以改进的地方}
+
+            然后继续下一个问题，使用下一个考词。
+
+            ## 注意事项
+            - 每个问题只针对一个考词
+            - 问题要有实际意义，贴近雅思口语话题
+            - 鼓励用户说完整的句子
+            - 反馈要具体、有建设性
+
+            请开始第一轮训练！
+            """, wordsListStr);
     }
 }

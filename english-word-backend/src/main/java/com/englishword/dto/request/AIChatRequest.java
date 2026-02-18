@@ -3,6 +3,8 @@ package com.englishword.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * AI聊天请求
  */
@@ -24,4 +26,7 @@ public class AIChatRequest {
 
     @Schema(description = "场景描述（training模式使用）", example = "You're at a coffee shop")
     private String scenario;
+
+    @Schema(description = "训练单词列表（training模式使用，多个单词）", example = "[\"allocate\", \"inevitable\", \"sustainable\"]")
+    private List<String> trainingWords;
 }

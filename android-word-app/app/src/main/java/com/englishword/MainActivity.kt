@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.englishword.data.RetrofitClient
 import com.englishword.data.TokenManager
+import com.englishword.data.model.Word
 import com.englishword.ui.screens.*
 import com.englishword.ui.theme.EnglishWordTheme
 import kotlinx.coroutines.flow.first
@@ -97,21 +96,39 @@ fun EnglishWordApp(tokenManager: TokenManager) {
                         navController.navigate("login") {
                             popUpTo("wordvault") { inclusive = true }
                         }
+                    },
+                    onAIAssistant = {
+                        navController.navigate("aichat")
+                    },
+                    onStartTraining = { selectedWords ->
+                        // Pass selected words as comma-separated string
+                        val wordsArg = selectedWords.mapNotNull { it.word }.joinToString(",")
+                        navController.navigate("aichat?words=$wordsArg")
                     }
                 )
             }
 
             // AI Chat Screen
-            composable("aichat") {
+            composable("aichat?words={words}") { backStackEntry ->
+                val wordsArg = backStackEntry.arguments?.getString("words") ?: ""
+                val selectedWords = if (wordsArg.isNotEmpty()) {
+                    wordsArg.split(",").map { wordStr ->
+                        Word().apply { word = wordStr }
+                    }
+                } else {
+                    emptyList()
+                }
                 AIChatScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    selectedWords = selectedWords
                 )
             }
 
-            // Scene Practice Screen
-            composable("scene") {
-                ScenePracticeScreen(
-                    onBack = { navController.popBackStack() }
+            // AI Chat Screen (without words)
+            composable("aichat") {
+                AIChatScreen(
+                    onBack = { navController.popBackStack() },
+                    selectedWords = emptyList()
                 )
             }
 
@@ -130,9 +147,7 @@ fun EnglishWordApp(tokenManager: TokenManager) {
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavItem("wordvault", "Vault", Icons.Default.Home),
-        BottomNavItem("aichat", "AI Chat", Icons.Default.Chat),
-        BottomNavItem("scene", "Practice", Icons.Default.School),
-        BottomNavItem("training", "Summary", Icons.Default.Star)
+        BottomNavItem("aichat", "AI Chat", Icons.Default.Chat)
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

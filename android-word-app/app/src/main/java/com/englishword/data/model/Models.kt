@@ -95,3 +95,30 @@ data class ChatMessage(
     val isAssistant: Boolean
         get() = role == "assistant"
 }
+
+/**
+ * AI Chat response from backend
+ */
+data class AIChatResponse(
+    var conversationId: String? = null,
+    var message: String? = null,
+    var suggestions: List<Suggestion>? = null
+) {
+    data class Suggestion(
+        var type: String? = null,
+        var word: String? = null,
+        var label: String? = null
+    )
+}
+
+/**
+ * AI Chat request to backend
+ */
+data class AIChatRequest(
+    var message: String? = null,
+    var conversationId: String? = null,
+    var mode: String? = null,  // "word_inquiry" or "word_training"
+    var targetWord: String? = null,
+    var scenario: String? = null,
+    var trainingWords: List<String>? = null  // 训练单词列表
+)

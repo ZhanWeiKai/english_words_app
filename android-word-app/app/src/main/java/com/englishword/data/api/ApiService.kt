@@ -1,6 +1,8 @@
 package com.englishword.data.api
 
 import com.englishword.data.model.*
+import com.englishword.data.model.AIChatRequest
+import com.englishword.data.model.AIChatResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -66,7 +68,7 @@ interface ApiService {
     // ==================== AI Chat APIs ====================
 
     @POST("ai/chat")
-    fun chat(@Body request: Map<String, String>): Call<ApiResponse<ChatMessage>>
+    suspend fun chat(@Body request: AIChatRequest): ApiResponse<AIChatResponse>
 
     @GET("ai/conversations")
     fun getConversationHistory(

@@ -89,13 +89,15 @@ class ZhipuAIServiceIntegrationTest {
 
         String targetWord = "ephemeral";
         String scenario = "You're at a coffee shop talking about social media trends.";
+        java.util.List<String> trainingWords = java.util.List.of("ephemeral", "inevitable", "sustainable");
         String conversationHistory = null;
 
         log.info("目标单词: {}", targetWord);
         log.info("场景描述: {}", scenario);
+        log.info("训练单词: {}", trainingWords);
         log.info("开始调用智谱AI...");
 
-        String response = zhipuAIService.practiceInScenario(targetWord, scenario, conversationHistory);
+        String response = zhipuAIService.practiceInScenario(targetWord, scenario, trainingWords, conversationHistory);
 
         log.info("========================================");
         log.info("AI回复内容:");

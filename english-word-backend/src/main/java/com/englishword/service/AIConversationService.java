@@ -80,6 +80,7 @@ public class AIConversationService {
                 aiReply = zhipuAIService.practiceInScenario(
                         request.getTargetWord(),
                         request.getScenario(),
+                        request.getTrainingWords(),
                         conversationHistory
                 );
             } else {
