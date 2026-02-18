@@ -7,6 +7,7 @@ import com.englishword.data.model.AIChatRequest
 import com.englishword.data.model.AIChatResponse
 import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
+import com.englishword.data.model.WordResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,14 @@ class AIChatViewModel : ViewModel() {
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    // Track added words in current session
+    private val _addedWords = MutableStateFlow<Set<String>>(emptySet())
+    val addedWords: StateFlow<Set<String>> = _addedWords.asStateFlow()
+
+    // Track words currently being added
+    private val _addingWords = MutableStateFlow<Set<String>>(emptySet())
+    val addingWords: StateFlow<Set<String>> = _addingWords.asStateFlow()
 
     // Store training words for the session
     private var trainingWordsList: List<String> = emptyList()
@@ -138,6 +147,7 @@ class AIChatViewModel : ViewModel() {
                         role = "assistant"
                         content = chatResponse.message
                         conversationId = chatResponse.conversationId
+                        wordResults = chatResponse.wordResults  // Pass word results
                     }
                     _messages.value = _messages.value + aiMsg
                 } else {
@@ -164,6 +174,48 @@ class AIChatViewModel : ViewModel() {
     }
 
     /**
+     * Add word to user's vault
+     */
+    fun addWord(wordResult: WordResult) {
+        val wordText = wordResult.word ?: return
+
+        // Prevent duplicate adds
+        if (_addedWords.value.contains(wordText) || _addingWords.value.contains(wordText)) {
+            return
+        }
+
+        viewModelScope.launch {
+            // Mark as adding
+            _addingWords.value = _addingWords.value + wordText
+
+            try {
+                val word = Word().apply {
+                    this.word = wordResult.word
+                    this.phonetic = wordResult.phonetic
+                    this.partOfSpeech = wordResult.partOfSpeech
+                    this.definition = wordResult.example
+                    this.translation = wordResult.meaning
+                    this.status = "LEARNING"
+                }
+
+                val response = apiService.addWord(word).execute()
+
+                if (response.isSuccessful && response.body()?.isSuccess == true) {
+                    // Mark as added
+                    _addedWords.value = _addedWords.value + wordText
+                } else {
+                    _error.value = "添加失败"
+                }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "网络错误"
+            } finally {
+                // Remove from adding set
+                _addingWords.value = _addingWords.value - wordText
+            }
+        }
+    }
+
+    /**
      * Clear conversation
      */
     fun clearConversation() {
@@ -171,5 +223,7 @@ class AIChatViewModel : ViewModel() {
         _conversationId.value = null
         _error.value = null
         trainingWordsList = emptyList()
+        _addedWords.value = emptySet()
+        _addingWords.value = emptySet()
     }
 }
