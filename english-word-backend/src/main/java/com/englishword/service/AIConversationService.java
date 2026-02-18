@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.englishword.dto.request.AIChatRequest;
 import com.englishword.dto.response.ApiResponse;
 import com.englishword.dto.response.AIChatResponse;
+import com.englishword.dto.response.WordResult;
 import com.englishword.entity.AIConversation;
 import com.englishword.repository.AIConversationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -125,7 +126,7 @@ public class AIConversationService {
             // 如果是word_search模式，尝试解析JSON并设置wordResults
             if ("word_search".equals(mode)) {
                 try {
-                    List<AIChatResponse.WordResult> wordResults = parseWordResults(aiReply);
+                    List<WordResult> wordResults = parseWordResults(aiReply);
                     if (wordResults != null && !wordResults.isEmpty()) {
                         response.setWordResults(wordResults);
                     }
@@ -229,7 +230,7 @@ public class AIConversationService {
     /**
      * 解析AI返回的单词搜索结果
      */
-    private List<AIChatResponse.WordResult> parseWordResults(String aiReply) {
+    private List<WordResult> parseWordResults(String aiReply) {
         try {
             // 提取JSON部分（可能被markdown代码块包裹）
             String jsonContent = aiReply;
@@ -257,10 +258,10 @@ public class AIConversationService {
                 return null;
             }
 
-            List<AIChatResponse.WordResult> results = new ArrayList<>();
+            List<WordResult> results = new ArrayList<>();
             for (int i = 0; i < wordsArray.size(); i++) {
                 JSONObject wordObj = wordsArray.getJSONObject(i);
-                AIChatResponse.WordResult result = new AIChatResponse.WordResult();
+                WordResult result = new WordResult();
                 result.setWord(wordObj.getString("word"));
                 result.setPhonetic(wordObj.getString("phonetic"));
                 result.setPartOfSpeech(wordObj.getString("partOfSpeech"));

@@ -150,6 +150,63 @@ adb devices
 - Scene Practice: 通过AI Chat的Train按钮进入
 - Training Summary: 训练完成后显示的结果页面
 
+## Server Deployment
+
+### Server Information
+- **Server IP**: `47.83.126.42`
+- **Deploy Path**: `/root/english-word-app/`
+- **Deploy Method**: Docker Compose
+- **JAR Location (in Docker mount)**: `/root/english-word-app/target/english-word-backend-1.0.0.jar`
+
+### Deploy Commands
+```bash
+# 1. 本地编译 JAR
+cd english-word-backend
+mvn clean package -DskipTests
+
+# 2. 上传 JAR 到服务器的正确位置（注意是 target 目录）
+scp target/english-word-backend-1.0.0.jar root@47.83.126.42:/root/english-word-app/target/
+
+# 3. 重启 Docker 容器
+ssh root@47.83.126.42 "cd /root/english-word-app && docker compose restart app"
+
+# 4. 查看日志
+ssh root@47.83.126.42 "docker compose -f /root/english-word-app/docker-compose.yml logs --tail=50 app"
+```
+
+### Deployment Lessons Learned (2026-02-18)
+
+#### 问题1：JAR 文件部署位置错误
+- **错误**：上传到 `/root/english-word-app/` 根目录
+- **正确**：Docker 挂载的是 `/root/english-word-app/target/` 目录
+- **原因**：`docker-compose.yml` 中配置的是 `./target/xxx.jar:/app/app.jar`
+- **教训**：部署前必须检查 `docker-compose.yml` 确认文件挂载路径
+
+#### 问题2：服务器架构理解错误
+- **错误**：尝试用 `java -jar` 直接运行
+- **正确**：服务器使用 Docker Compose 部署
+- **教训**：部署前要先检查服务器的部署架构（是否用 Docker、systemd 等）
+
+#### 问题3：nohup 找不到 java 命令
+- **原因**：非交互式 shell 中 java 不在 PATH
+- **解决**：使用 Docker 管理服务，不直接运行 jar
+
+#### 问题4：添加日志验证代码更新
+- **方法**：在关键位置添加 `log.info()` 日志
+- **好处**：可以确认代码是否真的在运行
+- **示例**：
+  ```java
+  log.info("=== AI Chat Request === Mode: {}, TrainingWords: {}", mode, trainingWords);
+  log.info(">>> Entering TRAINING mode");
+  ```
+
+### Docker Compose Configuration
+```yaml
+# 关键配置：JAR 挂载路径
+volumes:
+  - ./target/english-word-backend-1.0.0.jar:/app/app.jar
+```
+
 ## Git Repository
 - **Current Branch**: master
 - **Recent Commit**: feat: 实现单词库多选训练功能 (Phase 1)

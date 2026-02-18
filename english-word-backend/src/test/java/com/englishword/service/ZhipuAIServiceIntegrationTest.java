@@ -97,7 +97,7 @@ class ZhipuAIServiceIntegrationTest {
         log.info("训练单词: {}", trainingWords);
         log.info("开始调用智谱AI...");
 
-        String response = zhipuAIService.practiceInScenario(targetWord, scenario, trainingWords, conversationHistory);
+        String response = zhipuAIService.practiceInScenario(targetWord, scenario, trainingWords, "Let's start!", conversationHistory);
 
         log.info("========================================");
         log.info("AI回复内容:");

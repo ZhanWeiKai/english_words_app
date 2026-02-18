@@ -73,7 +73,7 @@ public class ZhipuAIServiceManualTest {
         log.info("⏳ 正在调用智谱AI API...\n");
 
         long startTime = System.currentTimeMillis();
-        String response = zhipuAIService.practiceInScenario(word, scenario, trainingWords, null);
+        String response = zhipuAIService.practiceInScenario(word, scenario, trainingWords, "Let's start!", null);
         long endTime = System.currentTimeMillis();
 
         log.info("✅ API调用成功!");

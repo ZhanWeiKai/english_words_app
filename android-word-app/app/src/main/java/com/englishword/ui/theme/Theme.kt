@@ -36,7 +36,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun EnglishWordTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,  // Disable dynamic colors to use custom theme
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
