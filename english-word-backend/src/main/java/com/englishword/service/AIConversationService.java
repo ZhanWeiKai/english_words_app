@@ -1,6 +1,8 @@
 package com.englishword.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
 import com.englishword.dto.request.AIChatRequest;
 import com.englishword.dto.response.ApiResponse;
 import com.englishword.dto.response.AIChatResponse;
@@ -74,13 +76,24 @@ public class AIConversationService {
             // 2. 根据模式调用AI
             String aiReply;
             String mode = request.getMode() != null ? request.getMode() : "word_inquiry";
+            log.info("=== AI Chat Request === Mode: {}, TrainingWords: {}, TargetWord: {}",
+                    mode, request.getTrainingWords(), request.getTargetWord());
 
             if ("word_training".equals(mode)) {
                 // 训练模式
+                log.info(">>> Entering TRAINING mode - calling practiceInScenario()");
                 aiReply = zhipuAIService.practiceInScenario(
                         request.getTargetWord(),
                         request.getScenario(),
                         request.getTrainingWords(),
+                        request.getMessage(),
+                        conversationHistory
+                );
+            } else if ("word_search".equals(mode)) {
+                // 搜索单词模式
+                log.info(">>> Entering WORD_SEARCH mode - calling searchWords()");
+                aiReply = zhipuAIService.searchWords(
+                        request.getMessage(),
                         conversationHistory
                 );
             } else {
@@ -108,6 +121,19 @@ public class AIConversationService {
             AIChatResponse response = new AIChatResponse();
             response.setConversationId(conversationId);
             response.setMessage(aiReply);
+
+            // 如果是word_search模式，尝试解析JSON并设置wordResults
+            if ("word_search".equals(mode)) {
+                try {
+                    List<AIChatResponse.WordResult> wordResults = parseWordResults(aiReply);
+                    if (wordResults != null && !wordResults.isEmpty()) {
+                        response.setWordResults(wordResults);
+                    }
+                } catch (Exception e) {
+                    log.warn("Failed to parse word search results: {}", e.getMessage());
+                    // 继续使用原始message
+                }
+            }
 
             // 生成建议操作
             List<AIChatResponse.Suggestion> suggestions = generateSuggestions(mode, request.getTargetWord());
@@ -198,5 +224,56 @@ public class AIConversationService {
         }
 
         return suggestions;
+    }
+
+    /**
+     * 解析AI返回的单词搜索结果
+     */
+    private List<AIChatResponse.WordResult> parseWordResults(String aiReply) {
+        try {
+            // 提取JSON部分（可能被markdown代码块包裹）
+            String jsonContent = aiReply;
+
+            // 如果包含```json，提取其中的内容
+            if (aiReply.contains("```json")) {
+                int start = aiReply.indexOf("```json") + 7;
+                int end = aiReply.indexOf("```", start);
+                if (end > start) {
+                    jsonContent = aiReply.substring(start, end).trim();
+                }
+            } else if (aiReply.contains("```")) {
+                int start = aiReply.indexOf("```") + 3;
+                int end = aiReply.indexOf("```", start);
+                if (end > start) {
+                    jsonContent = aiReply.substring(start, end).trim();
+                }
+            }
+
+            // 解析JSON
+            JSONObject jsonResponse = JSON.parseObject(jsonContent);
+            JSONArray wordsArray = jsonResponse.getJSONArray("words");
+
+            if (wordsArray == null || wordsArray.isEmpty()) {
+                return null;
+            }
+
+            List<AIChatResponse.WordResult> results = new ArrayList<>();
+            for (int i = 0; i < wordsArray.size(); i++) {
+                JSONObject wordObj = wordsArray.getJSONObject(i);
+                AIChatResponse.WordResult result = new AIChatResponse.WordResult();
+                result.setWord(wordObj.getString("word"));
+                result.setPhonetic(wordObj.getString("phonetic"));
+                result.setPartOfSpeech(wordObj.getString("partOfSpeech"));
+                result.setMeaning(wordObj.getString("meaning"));
+                result.setExample(wordObj.getString("example"));
+                results.add(result);
+            }
+
+            return results;
+
+        } catch (Exception e) {
+            log.error("Failed to parse word results JSON: {}", e.getMessage());
+            return null;
+        }
     }
 }
