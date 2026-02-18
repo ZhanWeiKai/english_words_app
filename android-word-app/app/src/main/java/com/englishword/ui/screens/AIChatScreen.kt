@@ -37,6 +37,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
+import com.englishword.data.model.WordResult
+import com.englishword.ui.components.WordResultCard
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -59,6 +61,8 @@ fun AIChatScreen(
     val viewModel: AIChatViewModel = viewModel()
     val messages by viewModel.messages.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val addedWords by viewModel.addedWords.collectAsState()
+    val addingWords by viewModel.addingWords.collectAsState()
 
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
@@ -148,7 +152,20 @@ fun AIChatScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages) { message ->
-                    ChatMessageItem(message = message)
+                    if (message.hasWordResults) {
+                        // Render word search results
+                        WordSearchResultMessage(
+                            message = message,
+                            addedWords = addedWords,
+                            addingWords = addingWords,
+                            onAddWord = { wordResult ->
+                                viewModel.addWord(wordResult)
+                            }
+                        )
+                    } else {
+                        // Regular message
+                        ChatMessageItem(message = message)
+                    }
                 }
 
                 // Show loading indicator when waiting for AI response
@@ -537,6 +554,45 @@ fun ChatMessageItem(message: ChatMessage) {
                 text = message.content ?: "",
                 modifier = Modifier.padding(12.dp),
                 color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+fun WordSearchResultMessage(
+    message: ChatMessage,
+    addedWords: Set<String>,
+    addingWords: Set<String>,
+    onAddWord: (WordResult) -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        // Header text
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.clip(MaterialTheme.shapes.medium)
+        ) {
+            Text(
+                text = "找到相关单词：",
+                modifier = Modifier.padding(12.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Word cards
+        message.wordResults?.forEach { wordResult ->
+            WordResultCard(
+                wordResult = wordResult,
+                isAdded = addedWords.contains(wordResult.word),
+                isAdding = addingWords.contains(wordResult.word),
+                onAddClick = { onAddWord(wordResult) }
             )
         }
     }
