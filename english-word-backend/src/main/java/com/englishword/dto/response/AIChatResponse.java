@@ -21,6 +21,9 @@ public class AIChatResponse {
     @Schema(description = "建议操作列表")
     private List<Suggestion> suggestions;
 
+    @Schema(description = "搜索单词结果列表(word_search模式)")
+    private List<WordResult> wordResults;
+
     @Data
     @Schema(description = "建议操作")
     public static class Suggestion {
