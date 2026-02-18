@@ -62,17 +62,38 @@ public class ZhipuAIService {
     }
 
     /**
+     * Word Search模式：搜索单词
+     * 返回结构化的单词列表，便于前端解析和展示
+     *
+     * @param input 用户输入（中文或英文）
+     * @param conversationHistory 对话历史（可选）
+     * @return AI回复（包含JSON格式的单词列表）
+     */
+    public String searchWords(String input, String conversationHistory) {
+        String systemPrompt = buildWordSearchPrompt();
+        String userMessage = String.format("请搜索单词：%s", input);
+
+        return callZhipuAI(systemPrompt, userMessage, conversationHistory);
+    }
+
+    /**
      * Word Training模式：场景训练
      *
      * @param targetWord 目标单词
      * @param scenario 场景描述
      * @param trainingWords 训练单词列表
+     * @param userMessage 用户消息
      * @param conversationHistory 对话历史
      * @return AI回复
      */
-    public String practiceInScenario(String targetWord, String scenario, List<String> trainingWords, String conversationHistory) {
+    public String practiceInScenario(String targetWord, String scenario, List<String> trainingWords, String userMessage, String conversationHistory) {
         String systemPrompt = buildScenarioTrainingPrompt(targetWord, scenario, trainingWords);
-        String userMessage = "Let's start!"; // 用户准备开始
+
+        log.info("=== practiceInScenario called ===");
+        log.info("TrainingWords: {}", trainingWords);
+        log.info("UserMessage: {}", userMessage);
+        log.info("SystemPrompt length: {} chars", systemPrompt.length());
+        log.info("SystemPrompt starts with: {}", systemPrompt.substring(0, Math.min(100, systemPrompt.length())));
 
         return callZhipuAI(systemPrompt, userMessage, conversationHistory);
     }
@@ -220,6 +241,49 @@ public class ZhipuAIService {
     }
 
     /**
+     * 构建Word Search模式的系统提示词
+     */
+    private String buildWordSearchPrompt() {
+        return """
+            你是"English Word App"的英语学习助手。用户会输入中文或英文，你需要返回1-3个相关单词。
+
+            ## 输出格式要求（必须严格遵守）
+
+            你必须返回以下JSON格式，不要包含其他文字：
+
+            ```json
+            {
+              "words": [
+                {
+                  "word": "ephemeral",
+                  "phonetic": "/ɪˈfem(ə)rəl/",
+                  "partOfSpeech": "adj.",
+                  "meaning": "短暂的；转瞬即逝的",
+                  "example": "Fame is ephemeral."
+                },
+                {
+                  "word": "transient",
+                  "phonetic": "/ˈtrænziənt/",
+                  "partOfSpeech": "adj.",
+                  "meaning": "短暂的；临时的",
+                  "example": "Transient workers are common in this industry."
+                }
+              ]
+            }
+            ```
+
+            ## 规则
+            1. 返回1-3个最相关的单词
+            2. 如果用户输入中文，返回对应的英文单词
+            3. 如果用户输入英文，返回该单词及同义词
+            4. 每个单词必须包含：word, phonetic, partOfSpeech, meaning, example
+            5. 例句要简洁实用（不超过15个单词）
+            6. 只返回JSON，不要有其他解释文字
+            7. 如果找不到相关单词，返回：{"words": []}
+            """;
+    }
+
+    /**
      * 构建Word Training模式的系统提示词
      */
     private String buildScenarioTrainingPrompt(String targetWord, String scenario, List<String> trainingWords) {
@@ -258,17 +322,48 @@ public class ZhipuAIService {
             4. 每个问题只针对一个考词
             5. 不评分、不总结
 
-            ## 示例输出
+            ## 【关键】对话连续性规则
 
+            用户回答后，你的下一个问题必须：
+            1. **围绕用户回答的话题展开**，而不是跳到全新话题
+            2. **继续深入讨论**用户提到的内容
+            3. **使用下一个考词**来提问
+
+            ### 示例：如何延续话题
+
+            **第一轮：**
             ```
-            👨‍🏫 Examiner: Cities today face many development challenges. What do you think is the biggest difficulty for modern cities?
-            中文：现代城市面临很多发展挑战，你认为最大的困难是什么？
+            👨‍🏫 Examiner: What products do you think have become ubiquitous in modern society?
+            中文：你认为哪些产品在现代社会已经无处不在？
 
-            （必须使用考词：complex /ˈkɒmpleks/ ＝ 复杂的
-            常见搭配：a complex problem / a complex system）
+            （必须使用考词：ubiquitous /juːˈbɪkwɪtəs/ ＝ 无处不在的
+            常见搭配：ubiquitous technology / ubiquitous presence）
 
             你来回答。
             ```
+
+            **用户回答：** "I think smartphones have become ubiquitous. Almost everyone has one now."
+
+            **你的反馈和下一轮（正确示范）：**
+            ```
+            ✅ 纠正：无明显错误
+            📝 自然改写：Smartphones have become ubiquitous in our daily lives, with nearly everyone owning one.
+            💡 提升点：可以加入更多细节，比如在哪些场景下特别明显
+
+            ---
+
+            👨‍🏫 Examiner: That's a great observation about smartphones! Since smartphones are everywhere now, how do you think companies should allocate their marketing budgets between mobile apps and traditional advertising?
+            中文：关于智能手机的观察很到位！既然智能手机现在无处不在，你认为公司应该如何在移动应用和传统广告之间分配营销预算？
+
+            （必须使用考词：allocate /ˈæləkeɪt/ ＝ 分配
+            常见搭配：allocate resources / allocate budget）
+
+            你来回答。
+            ```
+
+            **❌ 错误示范（不要这样）：**
+            不要问与智能手机无关的问题，比如：
+            "What do you think about environmental protection?"（话题跳跃太大）
 
             ## 用户回答后的反馈格式
 
@@ -279,7 +374,7 @@ public class ZhipuAIService {
 
             ---
 
-            👨‍🏫 Examiner: [下一个英文问题]
+            👨‍🏫 Examiner: {基于用户回答的话题，用下一个考词提出深入问题}
             中文：[中文翻译]
 
             （必须使用考词：[下一个单词] /[音标]/ ＝ [中文含义]
@@ -288,11 +383,18 @@ public class ZhipuAIService {
             你来回答。
             ```
 
+            ## 话题延续技巧
+            - 如果用户提到"智能手机"，下一轮可以问：智能手机的影响、应用、制造商、使用习惯等
+            - 如果用户提到"环境问题"，下一轮可以问：解决方案、政府责任、个人行动等
+            - 始终围绕用户的话题深入，同时自然地融入考词
+            - 问题之间要有逻辑连贯性，像真实的口语考试对话
+
             ## 注意事项
             - 每个问题必须有中文翻译
             - 每个问题必须有考词提示（音标、中文、搭配）
             - 问题要有实际意义，贴近雅思口语话题
             - 鼓励用户说完整的句子
+            - **必须延续话题，不要跳跃**
 
             请开始第一轮训练！用第一个考词提问。
             """, wordsListStr);
