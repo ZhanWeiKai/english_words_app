@@ -91,11 +91,12 @@ public class AIConversationService {
                         conversationHistory
                 );
             } else if ("word_search".equals(mode)) {
-                // 搜索单词模式
-                log.info(">>> Entering WORD_SEARCH mode - calling searchWords()");
-                aiReply = zhipuAIService.searchWords(
+                // 搜索单词模式 - 使用通用聊天（无特殊提示词）
+                log.info(">>> Entering WORD_SEARCH mode - plain chat without special prompt");
+                aiReply = zhipuAIService.chat(
                         request.getMessage(),
-                        conversationHistory
+                        conversationHistory,
+                        null  // 不使用特殊系统提示词
                 );
             } else {
                 // 询问模式（默认）
@@ -122,19 +123,6 @@ public class AIConversationService {
             AIChatResponse response = new AIChatResponse();
             response.setConversationId(conversationId);
             response.setMessage(aiReply);
-
-            // 如果是word_search模式，尝试解析JSON并设置wordResults
-            if ("word_search".equals(mode)) {
-                try {
-                    List<WordResult> wordResults = parseWordResults(aiReply);
-                    if (wordResults != null && !wordResults.isEmpty()) {
-                        response.setWordResults(wordResults);
-                    }
-                } catch (Exception e) {
-                    log.warn("Failed to parse word search results: {}", e.getMessage());
-                    // 继续使用原始message
-                }
-            }
 
             // 生成建议操作
             List<AIChatResponse.Suggestion> suggestions = generateSuggestions(mode, request.getTargetWord());
