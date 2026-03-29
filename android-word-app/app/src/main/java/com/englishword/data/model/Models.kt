@@ -55,6 +55,7 @@ data class Word(
     @SerializedName("definition")
     var definition: String? = null,
 
+    @SerializedName("translation")
     var translation: String? = null,
 
     @SerializedName("exampleSentence")
