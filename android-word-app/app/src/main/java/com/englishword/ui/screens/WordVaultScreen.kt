@@ -350,12 +350,36 @@ fun WordCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Word
-                    Text(
-                        text = word.word ?: "",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    // Word + Phonetic + Part of Speech
+                    Column {
+                        Text(
+                            text = word.word ?: "",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        // Phonetic and Part of Speech
+                        if (!word.phonetic.isNullOrBlank() || !word.partOfSpeech.isNullOrBlank()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                if (!word.phonetic.isNullOrBlank()) {
+                                    Text(
+                                        text = word.phonetic ?: "",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    )
+                                }
+                                if (!word.partOfSpeech.isNullOrBlank()) {
+                                    Text(
+                                        text = word.partOfSpeech ?: "",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                                    )
+                                }
+                            }
+                        }
+                    }
 
                     // Mastery stars
                     Row {
