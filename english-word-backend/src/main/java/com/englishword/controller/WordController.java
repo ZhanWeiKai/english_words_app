@@ -8,8 +8,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 单词管理控制器
@@ -49,7 +50,7 @@ public class WordController {
     }
 
     /**
-     * 获取单词列表（分页）
+     * 获取单词列表
      *
      * @param status 状态（LEARNING/MASTERED，可选）
      * @param page 页码（从0开始，默认0）
@@ -57,12 +58,12 @@ public class WordController {
      * @param request HTTP请求
      * @return 单词列表
      */
-    @Operation(summary = "获取单词列表", description = "分页获取当前用户的单词列表")
+    @Operation(summary = "获取单词列表", description = "获取当前用户的单词列表")
     @GetMapping
-    public ApiResponse<Page<Word>> getUserWords(
+    public ApiResponse<List<Word>> getUserWords(
             @Parameter(description = "状态（LEARNING/MASTERED）") @RequestParam(required = false) String status,
             @Parameter(description = "页码") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "100") int size,
             HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
         return wordService.getUserWords(userId, status, page, size);
@@ -129,10 +130,10 @@ public class WordController {
      */
     @Operation(summary = "搜索单词", description = "根据关键词搜索单词（模糊匹配单词或释义）")
     @GetMapping("/search")
-    public ApiResponse<Page<Word>> searchWords(
+    public ApiResponse<List<Word>> searchWords(
             @Parameter(description = "关键词") @RequestParam String keyword,
             @Parameter(description = "页码") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "每页大小") @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "每页大小") @RequestParam(defaultValue = "100") int size,
             HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
         return wordService.searchWords(userId, keyword, page, size);

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -130,7 +131,7 @@ public class WordService {
     }
 
     /**
-     * 获取用户的单词列表（分页）
+     * 获取用户的单词列表
      *
      * @param userId 用户ID
      * @param status 状态（LEARNING/MASTERED，null表示全部）
@@ -138,17 +139,17 @@ public class WordService {
      * @param size 每页大小
      * @return 单词列表
      */
-    public ApiResponse<Page<Word>> getUserWords(String userId, String status, int page, int size) {
+    public ApiResponse<List<Word>> getUserWords(String userId, String status, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
 
-        Page<Word> words;
+        Page<Word> wordsPage;
         if (status == null || status.isEmpty()) {
-            words = wordRepository.findByUserId(userId, pageable);
+            wordsPage = wordRepository.findByUserId(userId, pageable);
         } else {
-            words = wordRepository.findByUserIdAndStatus(userId, status, pageable);
+            wordsPage = wordRepository.findByUserIdAndStatus(userId, status, pageable);
         }
 
-        return ApiResponse.success(words);
+        return ApiResponse.success(wordsPage.getContent());
     }
 
     /**
@@ -160,11 +161,11 @@ public class WordService {
      * @param size 每页大小
      * @return 搜素结果
      */
-    public ApiResponse<Page<Word>> searchWords(String userId, String keyword, int page, int size) {
+    public ApiResponse<List<Word>> searchWords(String userId, String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Word> words = wordRepository.searchByUserId(userId, keyword, pageable);
+        Page<Word> wordsPage = wordRepository.searchByUserId(userId, keyword, pageable);
 
-        return ApiResponse.success(words);
+        return ApiResponse.success(wordsPage.getContent());
     }
 
     /**
