@@ -1,6 +1,7 @@
 package com.englishword.ui.screens
 
 import android.view.HapticFeedbackConstants
+import android.widget.Toast
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -28,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.TextStyle
@@ -59,10 +62,12 @@ fun AIChatScreen(
 ) {
     // Use ViewModel for state management
     val viewModel: AIChatViewModel = viewModel()
+    val context = LocalContext.current
     val messages by viewModel.messages.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val addedWords by viewModel.addedWords.collectAsState()
     val addingWords by viewModel.addingWords.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
@@ -83,6 +88,23 @@ fun AIChatScreen(
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
         }
+    }
+
+    // Show error toast
+    LaunchedEffect(error) {
+        error?.let {
+            Toast.makeText(context, "错误: $it", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Show success toast when word is added
+    var previousAddedCount by remember { mutableStateOf(0) }
+    LaunchedEffect(addedWords.size) {
+        if (addedWords.size > previousAddedCount) {
+            val newWord = addedWords.last()
+            Toast.makeText(context, "已添加: $newWord", Toast.LENGTH_SHORT).show()
+        }
+        previousAddedCount = addedWords.size
     }
 
     // Voice input state
@@ -159,7 +181,27 @@ fun AIChatScreen(
                             addedWords = addedWords,
                             addingWords = addingWords,
                             onAddWord = { wordResult ->
+                                Toast.makeText(context, "调用 addWord: word=${wordResult.word}, isNull=${wordResult.word == null}", Toast.LENGTH_LONG).show()
+
+                                // Check if word is null
+                                if (wordResult.word == null) {
+                                    Toast.makeText(context, "wordResult.word 是 null!", Toast.LENGTH_LONG).show()
+                                    return@WordSearchResultMessage
+                                }
+
+                                // Check if already added or adding
+                                if (addedWords.contains(wordResult.word)) {
+                                    Toast.makeText(context, "单词已添加: ${wordResult.word}", Toast.LENGTH_SHORT).show()
+                                    return@WordSearchResultMessage
+                                }
+                                if (addingWords.contains(wordResult.word)) {
+                                    Toast.makeText(context, "正在添加中: ${wordResult.word}", Toast.LENGTH_SHORT).show()
+                                    return@WordSearchResultMessage
+                                }
+
+                                Toast.makeText(context, "准备调用 viewModel.addWord", Toast.LENGTH_SHORT).show()
                                 viewModel.addWord(wordResult)
+                                Toast.makeText(context, "viewModel.addWord 已返回", Toast.LENGTH_SHORT).show()
                             }
                         )
                     } else {
@@ -297,15 +339,15 @@ fun TextInputArea(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Input container with rounded corners
+            // Input container with rounded corners - 支持多行输入
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(48.dp)
+                    .heightIn(min = 48.dp, max = 120.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(InputBgColor)
-                    .padding(horizontal = 20.dp),
-                contentAlignment = Alignment.CenterStart
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                contentAlignment = Alignment.TopStart
             ) {
                 BasicTextField(
                     value = inputText,
@@ -327,7 +369,8 @@ fun TextInputArea(
                         }
                         innerTextField()
                     },
-                    maxLines = 1
+                    minLines = 1,
+                    maxLines = 5
                 )
             }
 
@@ -550,11 +593,14 @@ fun ChatMessageItem(message: ChatMessage) {
                 .widthIn(max = 280.dp)
                 .clip(MaterialTheme.shapes.medium)
         ) {
-            Text(
-                text = message.content ?: "",
-                modifier = Modifier.padding(12.dp),
-                color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
-            )
+            // 使用 SelectionContainer 包裹 Text 以支持文本选择（长按全选/复制）
+            SelectionContainer {
+                Text(
+                    text = message.content ?: "",
+                    modifier = Modifier.padding(12.dp),
+                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
