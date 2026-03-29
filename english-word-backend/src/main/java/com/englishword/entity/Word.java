@@ -46,10 +46,16 @@ public class Word {
     private String partOfSpeech;
 
     /**
-     * 中文释义
+     * 英文释义
      */
     @Column(columnDefinition = "TEXT")
     private String definition;
+
+    /**
+     * 中文翻译
+     */
+    @Column(columnDefinition = "TEXT")
+    private String translation;
 
     /**
      * 例句（英文）
