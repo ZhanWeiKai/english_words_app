@@ -3,6 +3,7 @@ package com.englishword.data.api
 import com.englishword.data.model.*
 import com.englishword.data.model.AIChatRequest
 import com.englishword.data.model.AIChatResponse
+import com.englishword.data.model.WordListResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -35,7 +36,7 @@ interface ApiService {
         @Query("status") status: String?,
         @Query("page") page: Int,
         @Query("size") size: Int
-    ): Call<ApiResponse<List<Word>>>
+    ): Call<WordListResponse>
 
     @GET("words/{wordId}")
     fun getWordById(@Path("wordId") wordId: String): Call<ApiResponse<Word>>
@@ -54,7 +55,7 @@ interface ApiService {
         @Query("keyword") keyword: String,
         @Query("page") page: Int,
         @Query("size") size: Int
-    ): Call<ApiResponse<List<Word>>>
+    ): Call<WordListResponse>
 
     @PUT("words/{wordId}/mastery")
     fun updateMasteryLevel(

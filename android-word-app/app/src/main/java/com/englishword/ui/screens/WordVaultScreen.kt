@@ -1,5 +1,6 @@
 package com.englishword.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
@@ -22,8 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.englishword.data.model.Word
 import com.englishword.ui.theme.*
+
+private const val TAG = "english_words"
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -33,53 +38,56 @@ fun WordVaultScreen(
     onAIAssistant: () -> Unit = {},
     onStartTraining: (List<Word>) -> Unit = {}
 ) {
+    Log.d(TAG, "=== WordVaultScreen compose === username: $username")
+
+    val viewModel: WordVaultViewModel = viewModel()
+    val words by viewModel.words.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
+
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("All") }
-    var words by remember { mutableStateOf(listOf<Word>()) }
-    var isLoading by remember { mutableStateOf(true) }
 
     // Multi-select state
     var isMultiSelectMode by remember { mutableStateOf(false) }
     var selectedWords by remember { mutableStateOf(setOf<Word>()) }
 
+    // Snackbar state
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Log state changes
+    LaunchedEffect(words) {
+        Log.d(TAG, "Words state changed: ${words.size} words")
+    }
+    LaunchedEffect(isLoading) {
+        Log.d(TAG, "isLoading state changed: $isLoading")
+    }
+    LaunchedEffect(errorMessage) {
+        Log.d(TAG, "errorMessage state changed: $errorMessage")
+    }
+
     // Load words on init
     LaunchedEffect(Unit) {
-        // TODO: Load words from API
-        isLoading = false
-        // Sample data for now
-        words = listOf(
-            Word().apply {
-                this.word = "serendipity"
-                this.definition = "The occurrence of events by chance in a happy way"
-                this.translation = "意外发现珍奇事物的本领"
-                this.masteryLevelValue = 3
-                this.status = "LEARNING"
-            },
-            Word().apply {
-                this.word = "ephemeral"
-                this.definition = "Lasting for a very short time"
-                this.translation = "短暂的"
-                this.masteryLevelValue = 5
-                this.status = "MASTERED"
-            },
-            Word().apply {
-                this.word = "ubiquitous"
-                this.definition = "Present, appearing, or found everywhere"
-                this.translation = "无处不在的"
-                this.masteryLevelValue = 2
-                this.status = "LEARNING"
-            },
-            Word().apply {
-                this.word = "pragmatic"
-                this.definition = "Dealing with things sensibly and realistically"
-                this.translation = "务实的"
-                this.masteryLevelValue = 4
-                this.status = "LEARNING"
-            }
-        )
+        Log.d(TAG, "LaunchedEffect(Unit) - calling viewModel.loadWords()")
+        viewModel.loadWords()
+    }
+
+    // Show error snackbar
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { message ->
+            Log.e(TAG, "Showing error snackbar: $message")
+            snackbarHostState.showSnackbar(
+                message = message,
+                duration = SnackbarDuration.Short
+            )
+            viewModel.clearError()
+        }
     }
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -101,6 +109,10 @@ fun WordVaultScreen(
                             Icon(Icons.Default.Close, contentDescription = "Cancel", tint = Color.White)
                         }
                     } else {
+                        // Refresh button
+                        IconButton(onClick = { viewModel.loadWords() }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.White)
+                        }
                         TextButton(onClick = onLogout) {
                             Text("Logout", color = Color.White)
                         }
@@ -153,10 +165,28 @@ fun WordVaultScreen(
                 // Search bar
                 OutlinedTextField(
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = {
+                        searchQuery = it
+                        // Debounced search - search when text changes
+                        if (it.isNotEmpty()) {
+                            viewModel.searchWords(it)
+                        } else {
+                            viewModel.loadWords()
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = { Text("Search words...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = {
+                                searchQuery = ""
+                                viewModel.loadWords()
+                            }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                            }
+                        }
+                    },
                     singleLine = true
                 )
 
@@ -169,17 +199,26 @@ fun WordVaultScreen(
                 ) {
                     FilterChip(
                         selected = selectedFilter == "All",
-                        onClick = { selectedFilter = "All" },
+                        onClick = {
+                            selectedFilter = "All"
+                            viewModel.filterByStatus(null)
+                        },
                         label = { Text("All") }
                     )
                     FilterChip(
                         selected = selectedFilter == "Learning",
-                        onClick = { selectedFilter = "Learning" },
+                        onClick = {
+                            selectedFilter = "Learning"
+                            viewModel.filterByStatus("LEARNING")
+                        },
                         label = { Text("Learning") }
                     )
                     FilterChip(
                         selected = selectedFilter == "Mastered",
-                        onClick = { selectedFilter = "Mastered" },
+                        onClick = {
+                            selectedFilter = "Mastered"
+                            viewModel.filterByStatus("MASTERED")
+                        },
                         label = { Text("Mastered") }
                     )
                 }

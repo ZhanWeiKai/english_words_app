@@ -1,5 +1,6 @@
 package com.englishword.data
 
+import android.util.Log
 import com.englishword.BuildConfig
 import com.englishword.data.api.ApiService
 import kotlinx.coroutines.flow.first
@@ -11,13 +12,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
+    private const val TAG = "english_words"
+
     private var apiService: ApiService? = null
     private var tokenManager: TokenManager? = null
 
     fun init(tokenMgr: TokenManager) {
+        Log.d(TAG, "=== RetrofitClient.init() called ===")
+        Log.d(TAG, "BASE_URL: ${BuildConfig.BASE_URL}")
         tokenManager = tokenMgr
 
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
+        val loggingInterceptor = HttpLoggingInterceptor { message ->
+            Log.d(TAG, "HTTP: $message")
+        }.apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
@@ -27,6 +34,7 @@ object RetrofitClient {
                 val token = runBlocking {
                     tokenManager?.getToken()?.first()
                 }
+                Log.d(TAG, "Request interceptor - token: ${token?.take(20)}...")
                 val original = chain.request()
                 val request = if (token != null) {
                     original.newBuilder()
@@ -34,6 +42,7 @@ object RetrofitClient {
                         .method(original.method, original.body)
                         .build()
                 } else {
+                    Log.w(TAG, "No token available for request")
                     original
                 }
                 chain.proceed(request)
@@ -47,9 +56,11 @@ object RetrofitClient {
             .build()
 
         apiService = retrofit.create(ApiService::class.java)
+        Log.d(TAG, "RetrofitClient initialized successfully")
     }
 
     fun getApiService(): ApiService {
+        Log.d(TAG, "getApiService() called, initialized: ${apiService != null}")
         return apiService ?: throw IllegalStateException("RetrofitClient not initialized. Call init() first.")
     }
 }

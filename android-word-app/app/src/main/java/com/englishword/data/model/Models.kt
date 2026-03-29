@@ -1,5 +1,7 @@
 package com.englishword.data.model
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * API Response wrapper
  */
@@ -7,6 +9,18 @@ data class ApiResponse<T>(
     val code: Int = 0,
     val message: String? = null,
     val data: T? = null
+) {
+    val isSuccess: Boolean
+        get() = code == 200
+}
+
+/**
+ * Word List Response - 专门用于单词列表，避免泛型问题
+ */
+data class WordListResponse(
+    val code: Int = 0,
+    val message: String? = null,
+    val data: List<Word>? = null
 ) {
     val isSuccess: Boolean
         get() = code == 200
@@ -23,43 +37,51 @@ data class User(
 )
 
 /**
- * Word model
+ * Word model - 简化版本，避免 Gson 序列化问题
  */
 data class Word(
+    @SerializedName("wordId")
     var id: String? = null,
+
+    @SerializedName("userId")
     var userId: String? = null,
+
+    @SerializedName("word")
     var word: String? = null,
+
+    @SerializedName("pronunciation")
     var phonetic: String? = null,
+
+    @SerializedName("definition")
     var definition: String? = null,
+
     var translation: String? = null,
+
+    @SerializedName("exampleSentence")
     var example: String? = null,
+
+    @SerializedName("exampleTranslation")
     var exampleTranslation: String? = null,
+
+    @SerializedName("partOfSpeech")
     var partOfSpeech: String? = null,
-    var masteryLevel: MasteryLevel? = null,
+
+    @SerializedName("masteryLevel")
+    var masteryLevel: Int = 1,
+
+    @SerializedName("status")
     var status: String? = null,
+
     var reviewCount: Int = 0,
+
+    @SerializedName("createdAt")
     var createdAt: String? = null,
+
     var lastReviewedAt: String? = null
 ) {
-    enum class MasteryLevel(val level: Int) {
-        BEGINNER(1),
-        ELEMENTARY(2),
-        INTERMEDIATE(3),
-        ADVANCED(4),
-        PROFICIENT(5);
-
-        companion object {
-            fun fromLevel(level: Int): MasteryLevel {
-                return values().find { it.level == level } ?: BEGINNER
-            }
-        }
-    }
-
-    var masteryLevelValue: Int
-        get() = masteryLevel?.level ?: 1
-        set(value) {
-            masteryLevel = MasteryLevel.fromLevel(value)
-        }
+    // 计算属性，不影响序列化
+    val masteryLevelValue: Int
+        get() = masteryLevel
 }
 
 /**
@@ -137,4 +159,18 @@ data class WordResult(
     var partOfSpeech: String? = null,
     var meaning: String? = null,
     var example: String? = null
+)
+
+/**
+ * Spring Data Page response wrapper
+ */
+data class PageResponse<T>(
+    val content: List<T>? = null,
+    val totalElements: Long = 0,
+    val totalPages: Int = 0,
+    val size: Int = 0,
+    val number: Int = 0,
+    val first: Boolean = true,
+    val last: Boolean = true,
+    val empty: Boolean = true
 )
