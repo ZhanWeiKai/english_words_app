@@ -61,20 +61,7 @@ public class ZhipuAIService {
         return callZhipuAI(systemPrompt, userMessage, conversationHistory);
     }
 
-    /**
-     * Word Search模式：搜索单词
-     * 返回结构化的单词列表，便于前端解析和展示
-     *
-     * @param input 用户输入（中文或英文）
-     * @param conversationHistory 对话历史（可选）
-     * @return AI回复（包含JSON格式的单词列表）
-     */
-    public String searchWords(String input, String conversationHistory) {
-        String systemPrompt = buildWordSearchPrompt();
-        String userMessage = String.format("请搜索单词：%s", input);
 
-        return callZhipuAI(systemPrompt, userMessage, conversationHistory);
-    }
 
     /**
      * Word Training模式：场景训练

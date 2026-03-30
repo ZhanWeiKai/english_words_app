@@ -1,0 +1,24 @@
+### 用户登录
+POST http://localhost:8885/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "123456"
+}
+
+> {%
+    // 从返回 JSON 中提取 token
+    const json = JSON.parse(response.body);
+    client.global.set("token", json.data.token);
+%}
+
+###
+POST http://localhost:8885/api/ai/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "帮我解释一下单词 apple",
+  "conversationId": null
+}

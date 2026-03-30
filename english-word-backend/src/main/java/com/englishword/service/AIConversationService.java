@@ -90,19 +90,11 @@ public class AIConversationService {
                         request.getMessage(),
                         conversationHistory
                 );
-            } else if ("word_search".equals(mode)) {
-                // 搜索单词模式 - 使用通用聊天（无特殊提示词）
-                log.info(">>> Entering WORD_SEARCH mode - plain chat without special prompt");
+            } else {
                 aiReply = zhipuAIService.chat(
                         request.getMessage(),
                         conversationHistory,
                         null  // 不使用特殊系统提示词
-                );
-            } else {
-                // 询问模式（默认）
-                aiReply = zhipuAIService.explainWord(
-                        request.getMessage(),
-                        conversationHistory
                 );
             }
 
