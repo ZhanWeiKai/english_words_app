@@ -8,6 +8,7 @@ import com.englishword.data.model.AIChatResponse
 import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
 import com.englishword.data.model.WordResult
+import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -177,14 +178,17 @@ class AIChatViewModel : ViewModel() {
      * Add word to user's vault
      */
     fun addWord(wordResult: WordResult) {
+        Log.d("AIChatViewModel", "=== addWord called === wordResult: $wordResult")
         val wordText = wordResult.word ?: return
 
         // Prevent duplicate adds
         if (_addedWords.value.contains(wordText) || _addingWords.value.contains(wordText)) {
+            Log.d("AIChatViewModel", "=== Word already added or adding: $wordText ===")
             return
         }
 
         viewModelScope.launch {
+            Log.d("AIChatViewModel", "=== Starting addWord coroutine ===")
             // Mark as adding
             _addingWords.value = _addingWords.value + wordText
 
@@ -197,16 +201,22 @@ class AIChatViewModel : ViewModel() {
                     this.translation = wordResult.meaning
                     this.status = "LEARNING"
                 }
+                Log.d("AIChatViewModel", "=== Word object created: word=${word.word}, phonetic=${word.phonetic}, translation=${word.translation}")
 
                 val response = apiService.addWord(word).execute()
+                Log.d("AIChatViewModel", "=== API response: isSuccessful=${response.isSuccessful}, code=${response.code()}")
 
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     // Mark as added
                     _addedWords.value = _addedWords.value + wordText
+                    Log.d("AIChatViewModel", "=== Word added successfully: $wordText ===")
                 } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("AIChatViewModel", "=== Add word failed: code=${response.code()}, error=$errorBody, body=${response.body()} ===")
                     _error.value = "添加失败"
                 }
             } catch (e: Exception) {
+                Log.e("AIChatViewModel", "=== Add word exception: ${e.message}", e)
                 _error.value = e.message ?: "网络错误"
             } finally {
                 // Remove from adding set

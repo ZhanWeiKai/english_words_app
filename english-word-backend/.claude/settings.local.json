@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh -o ConnectTimeout=10 -o BatchMode=yes ubuntu@119.91.206.195 \"echo 'SSH Key 认证成功！' && hostname && uname -a\")",
+      "Bash(ssh -v -o ConnectTimeout=10 -o PreferredAuthentications=publickey -o PubkeyAuthentication=yes ubuntu@119.91.206.195 \"echo success\" 2>&1 | head -50)",
+      "Bash(ssh -v -o ConnectTimeout=10 ubuntu@119.91.206.195 \"echo success\" 2>&1 | tail -30)",
+      "Bash(ssh -o ConnectTimeout=10 ubuntu@119.91.206.195 \"echo 'SSH Key 认证成功！' && hostname && uname -a\")",
+      "WebSearch",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/zhenghaoyang24/english-vocabulary/main/main/tb_voc_book.json\" 2>/dev/null)",
+      "Bash(ssh root@119.91.206.195 \"cd /root/english-word-app && cat docker-compose.yml\")",
+      "Bash(ssh axonex@119.91.206.195 \"docker ps --format 'table {{.Names}}\\\\t{{.Image}}\\\\t{{.Status}}'\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519 axonex@119.91.206.195 \"docker ps --format 'table {{.Names}}\\\\t{{.Image}}\\\\t{{.Status}}'\")",
+      "Bash(ssh -i ~/.ssh/id_rsa axonex@119.91.206.195 \"docker ps --format 'table {{.Names}}\\\\t{{.Image}}\\\\t{{.Status}}'\")",
+      "Bash(ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new axonex@119.91.206.195 \"docker ps\")",
+      "Bash(ssh -i ~/.ssh/id_rsa axonex@119.91.206.195 \"echo 'Connected successfully'\")",
+      "Bash(ssh -i ~/.ssh/id_rsa ubuntu@119.91.206.195 \"echo 'Connected successfully' && docker ps\")",
+      "Bash(ssh -i ~/.ssh/id_rsa ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e 'SELECT COUNT\\(*\\) as total FROM word; SELECT word, definition, part_of_speech, mastery_level, status, DATE_FORMAT\\(created_at, \\\\\"%Y-%m-%d %H:%i\\\\\"\\) as created FROM word ORDER BY created_at DESC;'\")",
+      "Bash(ssh -i ~/.ssh/id_rsa ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e 'SELECT COUNT\\(*\\) as total FROM word; SELECT word_id, word, definition, part_of_speech, mastery_level, status, DATE_FORMAT\\(created_at, \\\\\"%Y-%m-%d %H:%i\\\\\"\\) as created FROM word ORDER BY created_at DESC;'\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"INSERT INTO word \\(word_id, word, definition, part_of_speech, pronunciation, mastery_level, status, user_id, created_at\\) VALUES \\(UUID\\(\\), 'emperor', '皇帝；君主', 'n.', '/ˈempərə\\(r\\)/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'exact', '精确的；准确的', 'a.', '/ɪgˈzækt/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'traditional', '传统的，惯例的；口传的，传说的', 'a.', '[trəˈdɪʃənl]', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'lack', '缺乏，不足，没有', 'n./vt.', '/læk/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'pardon', '原谅，宽恕；赦免；（用于请求别人重复某事）什么，请再说一遍', 'excl./n./vt.', '/ˈpɑːdn/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'regent', '摄政者（代国王统治者）', 'n.', '/ˈriːdʒənt/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'burgeon', '迅速成长；发展', 'vi.', '/ˈbɜːdʒən/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'argue', '争论；说服', 'v.', '/ˈɑːgjuː/', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'barely', '仅仅，几乎不；赤裸裸地，无遮蔽地', 'ad.', '[ˈbeəli]', 1, 'LEARNING', '1', NOW\\(\\)\\), \\(UUID\\(\\), 'methane', '甲烷', 'n.', '/ˈmiːθeɪn/', 1, 'LEARNING', '1', NOW\\(\\)\\);\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"SELECT word, definition, part_of_speech, pronunciation, mastery_level, status FROM word ORDER BY created_at DESC LIMIT 12;\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"SELECT * FROM user; SELECT word, user_id FROM word ORDER BY created_at DESC LIMIT 12;\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"UPDATE word SET user_id = 'cfdc0bc9-3416-46f4-99a0-acb284c13375' WHERE user_id = '1';\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"SELECT w.word, w.definition, u.username, u.nickname FROM word w LEFT JOIN user u ON w.user_id = u.user_id ORDER BY w.created_at DESC LIMIT 12;\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"SELECT w.word, u.username FROM word w LEFT JOIN user u ON w.user_id = u.user_id ORDER BY w.created_at DESC LIMIT 12;\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"SELECT user_id, username, nickname FROM user WHERE username LIKE '%testuser%';\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"UPDATE word SET user_id = '2417710e-8426-4fe8-bc84-49ed570ee99a' WHERE user_id = '1' OR user_id = 'cfdc0bc9-3416-46f4-99a0-acb284c13375';\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker exec english-word-mysql mysql -uroot -p123456 english_word_app -e \\\\\"SELECT w.word, w.definition, u.username FROM word w LEFT JOIN user u ON w.user_id = u.user_id ORDER BY w.created_at DESC LIMIT 12;\\\\\"\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"cd ~/projects/english-word-app && docker compose logs --tail=100 app 2>&1 | grep -i -A5 -B5 'error\\\\|exception\\\\|convertor\\\\|getUserWords'\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker logs english-word-app --tail=50 2>&1\")",
+      "Bash(curl -s \"http://119.91.206.195:8885/api/words?page=0&size=10\" -H \"Content-Type: application/json\" 2>&1 | head -100)",
+      "Bash(curl -s -X POST \"http://119.91.206.195:8885/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"testuser\",\"password\":\"testuser123\"}')",
+      "Bash(curl -s -X POST \"http://119.91.206.195:8885/api/auth/login\" -H \"Content-Type: application/json\" -d '{\"username\":\"testuser\",\"password\":\"123456\"}')",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyNDE3NzEwZS04NDI2LTRmZTgtYmM4NC00OWVkNTcwZWU5OWEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwic3ViIjoidGVzdHVzZXIiLCJpYXQiOjE3NzQ3NjI2NTMsImV4cCI6MTc3NTM2NzQ1M30.DtKQ1XcpiQuPd5ruplEDbVmUoe6ciT_7oHEtUzpsWrjLQQq0bE9fmBfwQG_Qy0z_ndiyC9jaXtkrMN5bhnB4lQ\"\ncurl -s \"http://119.91.206.195:8885/api/words?page=0&size=10\" -H \"Authorization: Bearer $TOKEN\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker logs english-word-app --tail=100 2>&1 | grep -i -A3 -B3 'error\\\\|exception\\\\|warn\\\\|fail'\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"docker logs english-word-app --tail=200 2>&1 | tail -100\")"
+    ]
+  }
+}

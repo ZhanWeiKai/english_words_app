@@ -21,10 +21,10 @@ android {
         debug {
             isDebuggable = true
             // 后端服务器地址
-            buildConfigField("String", "BASE_URL", "\"http://47.83.126.42:8885/api/\"")
+            buildConfigField("String", "BASE_URL", "\"http://119.91.206.195:8885/api/\"")
         }
         release {
-            buildConfigField("String", "BASE_URL", "\"http://47.83.126.42:8885/api/\"")
+            buildConfigField("String", "BASE_URL", "\"http://119.91.206.195:8885/api/\"")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
