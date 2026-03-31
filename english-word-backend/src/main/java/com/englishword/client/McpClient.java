@@ -3,11 +3,13 @@ package com.englishword.client;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.englishword.config.ChatProperties;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.net.URLEncoder;
@@ -20,11 +22,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * MCP (Model Context Protocol) 客户端
  *
  * 通过 WebSocket 连接到 MCP Endpoint Server，支持工具调用
+ *
+ * 使用 ApplicationRunner 确保在 McpToolServer 注册工具之后再连接
  */
 @Slf4j
 @Component
+@Order(2)  // 比 McpToolServerRunner (@Order(1)) 更晚执行
 @ConditionalOnProperty(prefix = "ai.chat.mcp", name = "enabled", havingValue = "true")
-public class McpClient {
+public class McpClient implements ApplicationRunner {
 
     private final ChatProperties.McpConfig config;
     private WebSocket webSocket;
@@ -41,13 +46,15 @@ public class McpClient {
                 .build();
     }
 
-    @PostConstruct
-    public void init() {
+    @Override
+    public void run(ApplicationArguments args) {
+        // 在 McpToolServerRunner 完成工具注册后再连接
+        log.info("[MCP-Client] 等待工具服务器就绪后连接...");
         connect();
         if (awaitConnection(config.getConnectTimeout())) {
-            log.info("MCP Server 连接成功: {}", config.getServerUrl());
+            log.info("[MCP-Client] MCP Server 连接成功: {}", config.getServerUrl());
         } else {
-            log.warn("MCP Server 连接失败，将降级为无工具模式");
+            log.warn("[MCP-Client] MCP Server 连接失败，将降级为无工具模式");
         }
     }
 

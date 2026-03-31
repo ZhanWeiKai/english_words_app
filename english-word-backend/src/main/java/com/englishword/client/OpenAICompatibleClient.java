@@ -4,10 +4,12 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.englishword.config.ChatProperties;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,7 +31,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class OpenAICompatibleClient implements ChatClient {
+@Order(3)  // 在 McpToolServerRunner(1) 和 McpClient(2) 之后执行
+public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
 
     private final OkHttpClient httpClient;
     private final ChatProperties config;
@@ -206,15 +209,20 @@ public class OpenAICompatibleClient implements ChatClient {
 
     // ==================== 初始化 MCP ====================
 
-    @PostConstruct
-    public void initMcp() {
+    @Override
+    public void run(ApplicationArguments args) {
+        initMcp();
+    }
+
+    private void initMcp() {
+        log.info("[OpenAI-Client] 初始化 MCP 工具...");
         if (mcpClient == null) {
-            log.info("MCP 未启用，跳过工具加载");
+            log.info("[OpenAI-Client] MCP 未启用，跳过工具加载");
             return;
         }
 
         if (!mcpClient.isConnected()) {
-            log.warn("MCP Server 未连接，将降级为无工具模式");
+            log.warn("[OpenAI-Client] MCP Server 未连接，将降级为无工具模式");
             return;
         }
 
@@ -289,8 +297,10 @@ public class OpenAICompatibleClient implements ChatClient {
         try {
             // 如果 MCP 就绪，使用支持工具调用的方法
             if (mcpReady && mcpFunctions != null && !mcpFunctions.isEmpty()) {
+                log.info("callApiWithTools...");
                 return callApiWithTools(systemPrompt, userMessage, conversationHistory);
             } else {
+                log.info("callApiSimple...");
                 return callApiSimple(systemPrompt, userMessage, conversationHistory);
             }
         } catch (Exception e) {

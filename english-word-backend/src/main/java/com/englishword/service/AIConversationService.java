@@ -90,6 +90,7 @@ public class AIConversationService {
                         conversationHistory
                 );
             } else {
+                log.info("chatClient.chat 通用模式");
                 // 默认：通用对话
                 aiReply = chatClient.chat(
                         null,  // 使用默认系统提示词

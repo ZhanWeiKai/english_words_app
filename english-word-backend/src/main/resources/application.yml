@@ -92,7 +92,7 @@ mcp:
     connect-timeout: 10
     scan:
       base-packages:
-        - com.englishword.tools
+        - com.englishword.mcptool.tools
 
 
 
