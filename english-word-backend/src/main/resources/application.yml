@@ -6,19 +6,6 @@ server:
 spring:
   application:
     name: english-word-backend
-  # Spring AI MCP 配置 (1.0.0)
-  ai:
-    mcp:
-      server:
-        name: english-word-mcp-server
-        version: 1.0.0
-        sse-endpoint: /sse
-    openai:
-      api-key: sk-f064b98676d8401fb6139d9a5e2cf78b
-      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
-      chat:
-        options:
-          model: qwen-plus
 
   # 数据库配置
   datasource:
@@ -79,12 +66,17 @@ springdoc:
     enabled: true
   packages-to-scan: com.englishword.controller
 
-# 智谱AI配置
-zhipuai:
-  api-key: 686aaa8dabec4d57a159f1eaf1082512.CpkL4TBjSusy6F7N
-  api-url: https://open.bigmodel.cn/api/paas/v4/chat/completions
-  model: glm-4-flash
-  base-prompt:
+# AI Chat 配置（支持 OpenAI 兼容 API）
+ai:
+  chat:
+    enabled: true
+    api-url: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
+    api-key: 686aaa8dabec4d57a159f1eaf1082512.CpkL4TBjSusy6F7N
+    model: GLM-4.7
+    timeout: 60
+    temperature: 0.7
+    max-tokens: 2000
+
 
 
 

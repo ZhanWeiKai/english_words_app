@@ -3,6 +3,7 @@ package com.englishword.service;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONArray;
+import com.englishword.client.ChatClient;
 import com.englishword.dto.request.AIChatRequest;
 import com.englishword.dto.response.ApiResponse;
 import com.englishword.dto.response.AIChatResponse;
@@ -22,7 +23,7 @@ import java.util.*;
  *
  * 功能：
  * - 管理AI对话记录
- * - 调用智谱AI获取回复
+ * - 调用 ChatClient 获取 AI 回复
  * - 生成建议操作
  */
 @Slf4j
@@ -30,7 +31,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class AIConversationService {
 
-    private final ZhipuAIService zhipuAIService;
+    private final ChatClient chatClient;
     private final AIConversationRepository conversationRepository;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -76,25 +77,24 @@ public class AIConversationService {
 
             // 2. 根据模式调用AI
             String aiReply;
-            String mode = request.getMode() != null ? request.getMode() : "word_inquiry";
+            String mode = request.getMode();
             log.info("=== AI Chat Request === Mode: {}, TrainingWords: {}, TargetWord: {}",
                     mode, request.getTrainingWords(), request.getTargetWord());
 
             if ("word_training".equals(mode)) {
                 // 训练模式
-                log.info(">>> Entering TRAINING mode - calling practiceInScenario()");
-                aiReply = zhipuAIService.practiceInScenario(
-                        request.getTargetWord(),
-                        request.getScenario(),
+                aiReply = chatClient.practiceInScenario(
                         request.getTrainingWords(),
+                        request.getScenario(),
                         request.getMessage(),
                         conversationHistory
                 );
             } else {
-                aiReply = zhipuAIService.chat(
+                // 默认：通用对话
+                aiReply = chatClient.chat(
+                        null,  // 使用默认系统提示词
                         request.getMessage(),
-                        conversationHistory,
-                        null  // 不使用特殊系统提示词
+                        conversationHistory
                 );
             }
 

@@ -16,7 +16,7 @@ Content-Type: application/json
 ###
 POST http://localhost:8885/api/ai/chat
 Content-Type: application/json
-Authorization: Bearer {{token}}
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyNDE3NzEwZS04NDI2LTRmZTgtYmM4NC00OWVkNTcwZWU5OWEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwic3ViIjoidGVzdHVzZXIiLCJpYXQiOjE3NzQ5NDQyMDQsImV4cCI6MTc3NTU0OTAwNH0.nPyIv1rVGzQSe_5Xt34i3yCCjAblF0tMQ_KuFvV1jQg94tvjVUAxdQVGO22nuUI99rHHhvaP5_ylQYlp98Sx5w
 
 {
   "message": "帮我解释一下单词 apple",
