@@ -76,6 +76,12 @@ ai:
     timeout: 60
     temperature: 0.7
     max-tokens: 2000
+    # MCP (Model Context Protocol) 配置
+    mcp:
+      enabled: true
+      server-url: ws://192.168.1.68:8004/mcp_endpoint/call/
+      token: mvPd7HCTRs1CB7Gc/6M4AcrmtRVnQjEhKvDWbn8Nq6w=
+      connect-timeout: 10
 
 
 

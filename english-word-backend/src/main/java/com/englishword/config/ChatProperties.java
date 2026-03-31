@@ -55,4 +55,35 @@ public class ChatProperties {
      * 最大返回 token 数
      */
     private int maxTokens = 2000;
+
+    /**
+     * MCP (Model Context Protocol) 配置
+     */
+    private McpConfig mcp = new McpConfig();
+
+    /**
+     * MCP 配置类
+     */
+    @Data
+    public static class McpConfig {
+        /**
+         * 是否启用 MCP 工具调用
+         */
+        private boolean enabled = false;
+
+        /**
+         * MCP Endpoint Server URL (WebSocket)
+         */
+        private String serverUrl;
+
+        /**
+         * MCP 认证 Token
+         */
+        private String token;
+
+        /**
+         * 连接超时时间（秒）
+         */
+        private int connectTimeout = 10;
+    }
 }

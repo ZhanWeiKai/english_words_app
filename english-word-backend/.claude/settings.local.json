@@ -34,7 +34,10 @@
       "Bash(ssh ubuntu@119.91.206.195 \"docker logs english-word-app --tail=100 2>&1 | grep -i -A3 -B3 'error\\\\|exception\\\\|warn\\\\|fail'\")",
       "Bash(ssh ubuntu@119.91.206.195 \"docker logs english-word-app --tail=200 2>&1 | tail -100\")",
       "Bash(cd \"C:/claude-project/english-word-app/english-word-backend\" && \"C:/Program Files/JetBrains/IntelliJ IDEA 2025.2.5/plugins/maven/lib/maven3/bin/mvn.cmd\" compile -q 2>&1 | head -50)",
-      "Bash(cd \"C:/claude-project/english-word-app/english-word-backend\" && \"C:/Program Files/JetBrains/IntelliJ IDEA 2025.2.5/plugins/maven/lib/maven3/bin/mvn.cmd\" compile -q 2>&1)"
+      "Bash(cd \"C:/claude-project/english-word-app/english-word-backend\" && \"C:/Program Files/JetBrains/IntelliJ IDEA 2025.2.5/plugins/maven/lib/maven3/bin/mvn.cmd\" compile -q 2>&1)",
+      "Bash(cd \"C:\\\\claude-project\\\\english-word-app\\\\english-word-backend\" && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" compile -q 2>&1 | head -50)",
+      "Bash(cd \"C:\\\\claude-project\\\\english-word-app\\\\english-word-backend\" && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" compile -q 2>&1 | head -80)",
+      "Bash(cd \"C:\\\\claude-project\\\\english-word-app\\\\english-word-backend\" && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" compile 2>&1 | tail -20)"
     ]
   }
 }

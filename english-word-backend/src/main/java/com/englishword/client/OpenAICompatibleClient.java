@@ -4,8 +4,10 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.englishword.config.ChatProperties;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,6 +21,11 @@ import java.util.concurrent.TimeUnit;
  * - 阿里通义千问 (qwen-plus)
  * - DeepSeek (deepseek-chat)
  * - OpenAI (gpt-4, gpt-3.5-turbo)
+ *
+ * 支持 MCP 工具调用：
+ * - 自动连接 MCP Endpoint Server
+ * - 获取工具列表并转换为 function calling 格式
+ * - AI 自动判断是否需要调用工具
  */
 @Slf4j
 @Component
@@ -26,6 +33,11 @@ public class OpenAICompatibleClient implements ChatClient {
 
     private final OkHttpClient httpClient;
     private final ChatProperties config;
+
+    // MCP 相关
+    private final McpClient mcpClient;
+    private JSONArray mcpFunctions;  // MCP 工具列表（智谱 AI function calling 格式）
+    private volatile boolean mcpReady = false;  // MCP 是否就绪
 
     // ==================== Prompt 模板 ====================
 
@@ -177,16 +189,65 @@ public class OpenAICompatibleClient implements ChatClient {
 
     // ==================== 构造函数 ====================
 
-    public OpenAICompatibleClient(ChatProperties config) {
+    @Autowired
+    public OpenAICompatibleClient(ChatProperties config, @Autowired(required = false) McpClient mcpClient) {
         this.config = config;
+        this.mcpClient = mcpClient;
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(config.getTimeout(), TimeUnit.SECONDS)
                 .writeTimeout(config.getTimeout(), TimeUnit.SECONDS)
                 .readTimeout(config.getTimeout(), TimeUnit.SECONDS)
                 .build();
 
-        log.info("ChatClient initialized: url={}, model={}, timeout={}s",
-                maskApiKey(config.getApiUrl()), config.getModel(), config.getTimeout());
+        log.info("ChatClient initialized: url={}, model={}, timeout={}s, mcpEnabled={}",
+                maskApiKey(config.getApiUrl()), config.getModel(), config.getTimeout(),
+                mcpClient != null);
+    }
+
+    // ==================== 初始化 MCP ====================
+
+    @PostConstruct
+    public void initMcp() {
+        if (mcpClient == null) {
+            log.info("MCP 未启用，跳过工具加载");
+            return;
+        }
+
+        if (!mcpClient.isConnected()) {
+            log.warn("MCP Server 未连接，将降级为无工具模式");
+            return;
+        }
+
+        try {
+            log.info("[MCP] 正在获取工具列表...");
+            JSONObject toolsResponse = mcpClient.listTools()
+                    .get(config.getMcp().getConnectTimeout(), TimeUnit.SECONDS);
+
+            if (toolsResponse.containsKey("error")) {
+                JSONObject error = toolsResponse.getJSONObject("error");
+                log.warn("[MCP] 获取工具失败: {}", error != null ? error.getString("message") : "未知错误");
+                return;
+            }
+
+            JSONObject result = toolsResponse.getJSONObject("result");
+            if (result == null || !result.containsKey("tools")) {
+                log.warn("[MCP] 工具列表格式错误");
+                return;
+            }
+
+            JSONArray mcpTools = result.getJSONArray("tools");
+            this.mcpFunctions = convertMcpToolsToFunctions(mcpTools);
+            this.mcpReady = true;
+
+            log.info("[MCP] 成功加载 {} 个工具", mcpFunctions.size());
+            for (int i = 0; i < mcpFunctions.size(); i++) {
+                JSONObject tool = mcpFunctions.getJSONObject(i).getJSONObject("function");
+                log.info("[MCP]   - {}: {}", tool.getString("name"), tool.getString("description"));
+            }
+
+        } catch (Exception e) {
+            log.warn("[MCP] 初始化失败: {}，将降级为无工具模式", e.getMessage());
+        }
     }
 
     // ==================== ChatClient 接口实现 ====================
@@ -226,81 +287,244 @@ public class OpenAICompatibleClient implements ChatClient {
 
     private String callApi(String systemPrompt, String userMessage, String conversationHistory) {
         try {
-            // 构建请求体
-            JSONObject requestBody = new JSONObject();
-            requestBody.put("model", config.getModel());
-
-            // 构建消息列表
-            JSONArray messages = new JSONArray();
-
-            // 添加系统提示词
-            JSONObject systemMsg = new JSONObject();
-            systemMsg.put("role", "system");
-            systemMsg.put("content", systemPrompt);
-            messages.add(systemMsg);
-
-            // 添加历史对话
-            if (conversationHistory != null && !conversationHistory.isEmpty()) {
-                try {
-                    JSONArray history = JSON.parseArray(conversationHistory);
-                    messages.addAll(history);
-                } catch (Exception e) {
-                    log.warn("Failed to parse conversation history: {}", e.getMessage());
-                }
+            // 如果 MCP 就绪，使用支持工具调用的方法
+            if (mcpReady && mcpFunctions != null && !mcpFunctions.isEmpty()) {
+                return callApiWithTools(systemPrompt, userMessage, conversationHistory);
+            } else {
+                return callApiSimple(systemPrompt, userMessage, conversationHistory);
             }
-
-            // 添加当前用户消息
-            JSONObject userMsg = new JSONObject();
-            userMsg.put("role", "user");
-            userMsg.put("content", userMessage);
-            messages.add(userMsg);
-
-            requestBody.put("messages", messages);
-
-            // 设置参数
-            requestBody.put("temperature", config.getTemperature());
-            requestBody.put("max_tokens", config.getMaxTokens());
-
-            // 创建 HTTP 请求
-            RequestBody body = RequestBody.create(
-                    requestBody.toJSONString(),
-                    MediaType.parse("application/json; charset=utf-8")
-            );
-
-            Request request = new Request.Builder()
-                    .url(config.getApiUrl())
-                    .addHeader("Authorization", "Bearer " + config.getApiKey())
-                    .addHeader("Content-Type", "application/json")
-                    .post(body)
-                    .build();
-
-            // 发送请求
-            try (Response response = httpClient.newCall(request).execute()) {
-                if (!response.isSuccessful()) {
-                    String errorBody = response.body() != null ? response.body().string() : "No error body";
-                    log.error("AI API call failed: status={}, body={}", response.code(), errorBody);
-                    return "抱歉，AI服务暂时不可用，请稍后再试。(Error: " + response.code() + ")";
-                }
-
-                String responseBody = response.body().string();
-                JSONObject jsonResponse = JSON.parseObject(responseBody);
-
-                // 提取 AI 回复
-                JSONArray choices = jsonResponse.getJSONArray("choices");
-                if (choices != null && !choices.isEmpty()) {
-                    JSONObject firstChoice = choices.getJSONObject(0);
-                    JSONObject messageObj = firstChoice.getJSONObject("message");
-                    return messageObj.getString("content");
-                }
-
-                log.error("AI response parse failed: no choices in response");
-                return "抱歉，AI回复解析失败。";
-            }
-
         } catch (Exception e) {
             log.error("AI API call exception", e);
             return "抱歉，AI服务出现错误：" + e.getMessage();
         }
+    }
+
+    /**
+     * 简单调用（无工具）
+     */
+    private String callApiSimple(String systemPrompt, String userMessage, String conversationHistory) throws Exception {
+        JSONObject requestBody = buildRequestBody(systemPrompt, userMessage, conversationHistory, null);
+        JSONObject response = sendRequest(requestBody);
+        return extractContent(response);
+    }
+
+    /**
+     * 支持 MCP 工具调用的方法
+     */
+    private String callApiWithTools(String systemPrompt, String userMessage, String conversationHistory) throws Exception {
+        int maxIterations = 5;  // 最多 5 轮工具调用
+        JSONArray conversationMessages = buildMessages(systemPrompt, userMessage, conversationHistory);
+
+        for (int i = 0; i < maxIterations; i++) {
+            // 构建请求
+            JSONObject requestBody = buildRequestBody(null, null, null, conversationMessages);
+            requestBody.put("tools", mcpFunctions);
+
+            // 发送请求
+            JSONObject response = sendRequest(requestBody);
+
+            // 解析响应
+            JSONObject message = response.getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message");
+
+            // 检查是否有工具调用
+            JSONArray toolCalls = message.getJSONArray("tool_calls");
+
+            if (toolCalls != null && !toolCalls.isEmpty()) {
+                log.info("[MCP] AI 决定调用 {} 个工具", toolCalls.size());
+
+                // 添加 assistant 消息到历史
+                conversationMessages.add(message);
+
+                // 执行每个工具调用
+                for (int j = 0; j < toolCalls.size(); j++) {
+                    JSONObject toolCall = toolCalls.getJSONObject(j);
+                    String toolCallId = toolCall.getString("id");
+                    JSONObject function = toolCall.getJSONObject("function");
+                    String functionName = function.getString("name");
+                    String argumentsStr = function.getString("arguments");
+
+                    log.info("[MCP] 调用工具: {} 参数: {}", functionName, argumentsStr);
+
+                    // 调用 MCP 工具
+                    JSONObject arguments = JSON.parseObject(argumentsStr);
+                    JSONObject toolResult = mcpClient.callTool(functionName, arguments)
+                            .get(config.getTimeout(), TimeUnit.SECONDS);
+
+                    String toolOutput = extractToolContent(toolResult);
+                    log.info("[MCP] 工具返回: {}", toolOutput.length() > 200 ? toolOutput.substring(0, 200) + "..." : toolOutput);
+
+                    // 添加工具结果到历史
+                    JSONObject toolMessage = new JSONObject();
+                    toolMessage.put("role", "tool");
+                    toolMessage.put("tool_call_id", toolCallId);
+                    toolMessage.put("content", toolOutput);
+                    conversationMessages.add(toolMessage);
+                }
+
+                // 继续下一轮，让 AI 基于工具结果生成回复
+                continue;
+            }
+
+            // 没有工具调用，返回最终内容
+            String content = message.getString("content");
+            return content;
+        }
+
+        return "工具调用次数超过限制";
+    }
+
+    /**
+     * 构建消息列表
+     */
+    private JSONArray buildMessages(String systemPrompt, String userMessage, String conversationHistory) {
+        JSONArray messages = new JSONArray();
+
+        // 添加系统提示词
+        if (systemPrompt != null && !systemPrompt.isEmpty()) {
+            JSONObject systemMsg = new JSONObject();
+            systemMsg.put("role", "system");
+            systemMsg.put("content", systemPrompt);
+            messages.add(systemMsg);
+        }
+
+        // 添加历史对话
+        if (conversationHistory != null && !conversationHistory.isEmpty()) {
+            try {
+                JSONArray history = JSON.parseArray(conversationHistory);
+                messages.addAll(history);
+            } catch (Exception e) {
+                log.warn("Failed to parse conversation history: {}", e.getMessage());
+            }
+        }
+
+        // 添加当前用户消息
+        if (userMessage != null && !userMessage.isEmpty()) {
+            JSONObject userMsg = new JSONObject();
+            userMsg.put("role", "user");
+            userMsg.put("content", userMessage);
+            messages.add(userMsg);
+        }
+
+        return messages;
+    }
+
+    /**
+     * 构建请求体
+     */
+    private JSONObject buildRequestBody(String systemPrompt, String userMessage, String conversationHistory, JSONArray existingMessages) {
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("model", config.getModel());
+
+        JSONArray messages;
+        if (existingMessages != null) {
+            messages = existingMessages;
+        } else {
+            messages = buildMessages(systemPrompt, userMessage, conversationHistory);
+        }
+
+        requestBody.put("messages", messages);
+        requestBody.put("temperature", config.getTemperature());
+        requestBody.put("max_tokens", config.getMaxTokens());
+
+        return requestBody;
+    }
+
+    /**
+     * 发送 HTTP 请求
+     */
+    private JSONObject sendRequest(JSONObject requestBody) throws Exception {
+        RequestBody body = RequestBody.create(
+                requestBody.toJSONString(),
+                MediaType.parse("application/json; charset=utf-8")
+        );
+
+        Request request = new Request.Builder()
+                .url(config.getApiUrl())
+                .addHeader("Authorization", "Bearer " + config.getApiKey())
+                .addHeader("Content-Type", "application/json")
+                .post(body)
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorBody = response.body() != null ? response.body().string() : "No error body";
+                throw new RuntimeException("AI API 请求失败: " + response.code() + " - " + errorBody);
+            }
+
+            String responseBody = response.body().string();
+            return JSON.parseObject(responseBody);
+        }
+    }
+
+    /**
+     * 提取 AI 回复内容
+     */
+    private String extractContent(JSONObject response) {
+        JSONArray choices = response.getJSONArray("choices");
+        if (choices != null && !choices.isEmpty()) {
+            JSONObject firstChoice = choices.getJSONObject(0);
+            JSONObject messageObj = firstChoice.getJSONObject("message");
+            return messageObj.getString("content");
+        }
+        return "AI 回复解析失败";
+    }
+
+    /**
+     * 从 MCP 工具响应中提取内容
+     */
+    private String extractToolContent(JSONObject toolResult) {
+        if (toolResult.containsKey("result")) {
+            JSONObject result = toolResult.getJSONObject("result");
+            JSONArray content = result.getJSONArray("content");
+            if (content != null && !content.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < content.size(); i++) {
+                    JSONObject item = content.getJSONObject(i);
+                    if ("text".equals(item.getString("type"))) {
+                        sb.append(item.getString("text"));
+                    }
+                }
+                return sb.toString();
+            }
+        }
+
+        if (toolResult.containsKey("error")) {
+            return "Error: " + toolResult.getJSONObject("error").getString("message");
+        }
+
+        return toolResult.toJSONString();
+    }
+
+    /**
+     * 将 MCP 工具格式转换为智谱 AI function calling 格式
+     */
+    private JSONArray convertMcpToolsToFunctions(JSONArray mcpTools) {
+        JSONArray functions = new JSONArray();
+
+        for (int i = 0; i < mcpTools.size(); i++) {
+            JSONObject mcpTool = mcpTools.getJSONObject(i);
+
+            JSONObject function = new JSONObject();
+            function.put("name", mcpTool.getString("name"));
+            function.put("description", mcpTool.getString("description"));
+
+            // 转换 inputSchema -> parameters
+            JSONObject inputSchema = mcpTool.getJSONObject("inputSchema");
+            if (inputSchema != null) {
+                function.put("parameters", inputSchema);
+            }
+
+            // 包装为智谱 AI 的 tool 格式
+            JSONObject tool = new JSONObject();
+            tool.put("type", "function");
+            tool.put("function", function);
+
+            functions.add(tool);
+        }
+
+        return functions;
     }
 
     // ==================== 工具方法 ====================
