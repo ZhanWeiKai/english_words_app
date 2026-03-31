@@ -6,6 +6,19 @@ server:
 spring:
   application:
     name: english-word-backend
+  # Spring AI MCP 配置 (1.0.0)
+  ai:
+    mcp:
+      server:
+        name: english-word-mcp-server
+        version: 1.0.0
+        sse-endpoint: /sse
+    openai:
+      api-key: sk-f064b98676d8401fb6139d9a5e2cf78b
+      base-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+      chat:
+        options:
+          model: qwen-plus
 
   # 数据库配置
   datasource:
@@ -39,6 +52,7 @@ spring:
       max-request-size: 10MB
       file-size-threshold: 2MB
 
+
 # JWT配置
 jwt:
   secret: EnglishWordAppSecretKey2026ForJWTTokenGenerationMustBeLongEnough
@@ -70,5 +84,8 @@ zhipuai:
   api-key: 686aaa8dabec4d57a159f1eaf1082512.CpkL4TBjSusy6F7N
   api-url: https://open.bigmodel.cn/api/paas/v4/chat/completions
   model: glm-4-flash
-  base-prompt: |
+  base-prompt:
+
+
+
 

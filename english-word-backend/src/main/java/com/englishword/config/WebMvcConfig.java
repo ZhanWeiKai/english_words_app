@@ -28,7 +28,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/v3/api-docs/**",
                         "/static/**",
                         "/favicon.ico",
-                        "/ws/**"
+                        "/ws/**",
+                        "/sse",
+                        "/sse/**"
                 );
     }
 }
