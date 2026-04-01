@@ -3,15 +3,18 @@ package com.englishword.mcptool.tools;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import com.englishword.dto.response.ApiResponse;
+import com.englishword.entity.User;
 import com.englishword.entity.Word;
 import com.englishword.mcptool.annotation.McpParam;
 import com.englishword.mcptool.annotation.McpTool;
+import com.englishword.repository.UserRepository;
 import com.englishword.service.WordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 单词工具类
@@ -24,6 +27,7 @@ import java.util.List;
 public class WordTool {
 
     private final WordService wordService;
+    private final UserRepository userRepository;
 
     /**
      * 获取用户词库列表
@@ -115,19 +119,51 @@ public class WordTool {
 
     /**
      * 添加单词
+     *
+     * AI 调用此工具时，必须提供完整的单词信息：
+     * - 根据用户名查找用户ID
+     * - 使用 AI 知识库填充单词的释义、翻译、音标、词性、例句
      */
-    @McpTool(name = "add_word", description = "添加新单词到用户词库")
-    public String addWord(
-            @McpParam(name = "userId", description = "用户ID") String userId,
-            @McpParam(name = "word", description = "英文单词") String word,
-            @McpParam(name = "definition", description = "英文释义", required = false) String definition,
-            @McpParam(name = "translation", description = "中文翻译", required = false) String translation,
-            @McpParam(name = "pronunciation", description = "音标", required = false) String pronunciation,
-            @McpParam(name = "partOfSpeech", description = "词性", required = false) String partOfSpeech,
-            @McpParam(name = "exampleSentence", description = "例句", required = false) String exampleSentence
-    ) {
-        log.info("[MCP-WordTool] 添加单词: userId={}, word={}", userId, word);
+    @McpTool(name = "add_word", description = """
+            添加新单词到用户词库。
 
+            【重要】调用此工具前，AI 必须使用自身知识库填充以下完整信息：
+            - definition: 英文释义（用英文解释单词含义）
+            - translation: 中文翻译
+            - pronunciation: 国际音标（如 /ˈæpl/）
+            - partOfSpeech: 词性（如 n./v./adj./adv.）
+            - exampleSentence: 英文例句
+
+            示例：添加单词 "apple" 时，AI 应提供：
+            - definition: a round fruit with red, green, or yellow skin and firm white flesh
+            - translation: 苹果
+            - pronunciation: /ˈæpl/
+            - partOfSpeech: n.
+            - exampleSentence: I eat an apple every day for breakfast.
+            """)
+    public String addWord(
+            @McpParam(name = "username", description = "用户名（如 testuser）") String username,
+            @McpParam(name = "word", description = "英文单词") String word,
+            @McpParam(name = "definition", description = "英文释义（AI必须提供）") String definition,
+            @McpParam(name = "translation", description = "中文翻译（AI必须提供）") String translation,
+            @McpParam(name = "pronunciation", description = "国际音标（AI必须提供，如 /ˈæpl/）") String pronunciation,
+            @McpParam(name = "partOfSpeech", description = "词性（AI必须提供，如 n./v./adj./adv.）") String partOfSpeech,
+            @McpParam(name = "exampleSentence", description = "英文例句（AI必须提供）") String exampleSentence
+    ) {
+        log.info("[MCP-WordTool] 添加单词: username={}, word={}", username, word);
+
+        // 1. 根据用户名查找用户ID
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            JSONObject result = new JSONObject();
+            result.put("success", false);
+            result.put("message", "用户不存在: " + username);
+            return result.toJSONString();
+        }
+
+        String userId = userOpt.get().getUserId();
+
+        // 2. 创建单词对象
         Word newWord = new Word();
         newWord.setWord(word);
         newWord.setDefinition(definition);
@@ -136,11 +172,13 @@ public class WordTool {
         newWord.setPartOfSpeech(partOfSpeech);
         newWord.setExampleSentence(exampleSentence);
 
+        // 3. 调用服务添加单词
         ApiResponse<Word> response = wordService.addWord(userId, newWord);
 
         JSONObject result = new JSONObject();
         result.put("success", response.getCode() == 200);
         result.put("message", response.getMessage());
+        result.put("username", username);
 
         if (response.getCode() == 200 && response.getData() != null) {
             result.put("word", wordToJson(response.getData()));
