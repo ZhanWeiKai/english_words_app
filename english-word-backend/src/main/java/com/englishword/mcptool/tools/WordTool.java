@@ -2,24 +2,23 @@ package com.englishword.mcptool.tools;
 
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.englishword.context.UserContext;
 import com.englishword.dto.response.ApiResponse;
-import com.englishword.entity.User;
 import com.englishword.entity.Word;
 import com.englishword.mcptool.annotation.McpParam;
 import com.englishword.mcptool.annotation.McpTool;
-import com.englishword.repository.UserRepository;
 import com.englishword.service.WordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 单词工具类
  *
  * 提供单词相关的工具方法，供 AI 调用
+ * 自动使用当前登录用户，无需传递用户ID
  */
 @Slf4j
 @Component
@@ -27,18 +26,44 @@ import java.util.Optional;
 public class WordTool {
 
     private final WordService wordService;
-    private final UserRepository userRepository;
+
+    /**
+     * 获取当前用户ID，如果未登录则返回错误信息
+     */
+    private String getCurrentUserId() {
+        String userId = UserContext.getUserId();
+        if (userId == null) {
+            throw new IllegalStateException("用户未登录");
+        }
+        return userId;
+    }
+
+    /**
+     * 构建错误响应
+     */
+    private String errorResponse(String message) {
+        JSONObject result = new JSONObject();
+        result.put("success", false);
+        result.put("message", message);
+        return result.toJSONString();
+    }
 
     /**
      * 获取用户词库列表
      */
-    @McpTool(name = "list_user_words", description = "获取用户词库中的所有单词列表，支持分页和按状态筛选")
+    @McpTool(name = "list_user_words", description = "获取当前用户词库中的所有单词列表，支持分页和按状态筛选")
     public String listUserWords(
-            @McpParam(name = "userId", description = "用户ID") String userId,
             @McpParam(name = "status", description = "单词状态：LEARNING(学习中) 或 MASTERED(已掌握)，不传则返回全部", required = false) String status,
             @McpParam(name = "page", description = "页码，从0开始", required = false) Integer page,
             @McpParam(name = "size", description = "每页数量，默认20", required = false) Integer size
     ) {
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
+        }
+
         log.info("[MCP-WordTool] 获取用户词库: userId={}, status={}, page={}, size={}", userId, status, page, size);
 
         int pageNum = (page != null && page >= 0) ? page : 0;
@@ -64,13 +89,19 @@ public class WordTool {
     /**
      * 搜索单词
      */
-    @McpTool(name = "search_words", description = "在用户词库中搜索单词（模糊匹配单词、释义）")
+    @McpTool(name = "search_words", description = "在当前用户词库中搜索单词（模糊匹配单词、释义）")
     public String searchWords(
-            @McpParam(name = "userId", description = "用户ID") String userId,
             @McpParam(name = "keyword", description = "搜索关键词") String keyword,
             @McpParam(name = "page", description = "页码，从0开始", required = false) Integer page,
             @McpParam(name = "size", description = "每页数量", required = false) Integer size
     ) {
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
+        }
+
         log.info("[MCP-WordTool] 搜索单词: userId={}, keyword={}", userId, keyword);
 
         int pageNum = (page != null && page >= 0) ? page : 0;
@@ -99,9 +130,15 @@ public class WordTool {
      */
     @McpTool(name = "get_word_detail", description = "根据单词ID获取单词的详细信息")
     public String getWordDetail(
-            @McpParam(name = "userId", description = "用户ID") String userId,
             @McpParam(name = "wordId", description = "单词ID") String wordId
     ) {
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
+        }
+
         log.info("[MCP-WordTool] 获取单词详情: userId={}, wordId={}", userId, wordId);
 
         ApiResponse<Word> response = wordService.getWordById(wordId, userId);
@@ -119,13 +156,9 @@ public class WordTool {
 
     /**
      * 添加单词
-     *
-     * AI 调用此工具时，必须提供完整的单词信息：
-     * - 根据用户名查找用户ID
-     * - 使用 AI 知识库填充单词的释义、翻译、音标、词性、例句
      */
     @McpTool(name = "add_word", description = """
-            添加新单词到用户词库。
+            添加新单词到当前用户词库。
 
             【重要】调用此工具前，AI 必须使用自身知识库填充以下完整信息：
             - definition: 英文释义（用英文解释单词含义）
@@ -142,7 +175,6 @@ public class WordTool {
             - exampleSentence: I eat an apple every day for breakfast.
             """)
     public String addWord(
-            @McpParam(name = "username", description = "用户名（如 testuser）") String username,
             @McpParam(name = "word", description = "英文单词") String word,
             @McpParam(name = "definition", description = "英文释义（AI必须提供）") String definition,
             @McpParam(name = "translation", description = "中文翻译（AI必须提供）") String translation,
@@ -150,20 +182,16 @@ public class WordTool {
             @McpParam(name = "partOfSpeech", description = "词性（AI必须提供，如 n./v./adj./adv.）") String partOfSpeech,
             @McpParam(name = "exampleSentence", description = "英文例句（AI必须提供）") String exampleSentence
     ) {
-        log.info("[MCP-WordTool] 添加单词: username={}, word={}", username, word);
-
-        // 1. 根据用户名查找用户ID
-        Optional<User> userOpt = userRepository.findByUsername(username);
-        if (userOpt.isEmpty()) {
-            JSONObject result = new JSONObject();
-            result.put("success", false);
-            result.put("message", "用户不存在: " + username);
-            return result.toJSONString();
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
         }
 
-        String userId = userOpt.get().getUserId();
+        log.info("[MCP-WordTool] 添加单词: userId={}, word={}", userId, word);
 
-        // 2. 创建单词对象
+        // 创建单词对象
         Word newWord = new Word();
         newWord.setWord(word);
         newWord.setDefinition(definition);
@@ -172,13 +200,12 @@ public class WordTool {
         newWord.setPartOfSpeech(partOfSpeech);
         newWord.setExampleSentence(exampleSentence);
 
-        // 3. 调用服务添加单词
+        // 调用服务添加单词
         ApiResponse<Word> response = wordService.addWord(userId, newWord);
 
         JSONObject result = new JSONObject();
         result.put("success", response.getCode() == 200);
         result.put("message", response.getMessage());
-        result.put("username", username);
 
         if (response.getCode() == 200 && response.getData() != null) {
             result.put("word", wordToJson(response.getData()));
@@ -192,10 +219,16 @@ public class WordTool {
      */
     @McpTool(name = "update_mastery", description = "更新单词的掌握程度（1-5星）")
     public String updateMastery(
-            @McpParam(name = "userId", description = "用户ID") String userId,
             @McpParam(name = "wordId", description = "单词ID") String wordId,
             @McpParam(name = "masteryLevel", description = "掌握程度（1-5）") Integer masteryLevel
     ) {
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
+        }
+
         log.info("[MCP-WordTool] 更新掌握程度: userId={}, wordId={}, masteryLevel={}", userId, wordId, masteryLevel);
 
         ApiResponse<Word> response = wordService.updateMasteryLevel(wordId, userId, masteryLevel);
@@ -214,11 +247,17 @@ public class WordTool {
     /**
      * 删除单词
      */
-    @McpTool(name = "delete_word", description = "从用户词库中删除单词")
+    @McpTool(name = "delete_word", description = "从当前用户词库中删除单词")
     public String deleteWord(
-            @McpParam(name = "userId", description = "用户ID") String userId,
             @McpParam(name = "wordId", description = "单词ID") String wordId
     ) {
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
+        }
+
         log.info("[MCP-WordTool] 删除单词: userId={}, wordId={}", userId, wordId);
 
         ApiResponse<String> response = wordService.deleteWord(wordId, userId);
@@ -233,10 +272,15 @@ public class WordTool {
     /**
      * 获取单词统计
      */
-    @McpTool(name = "get_word_statistics", description = "获取用户词库的统计信息（学习中/已掌握数量）")
-    public String getWordStatistics(
-            @McpParam(name = "userId", description = "用户ID") String userId
-    ) {
+    @McpTool(name = "get_word_statistics", description = "获取当前用户词库的统计信息（学习中/已掌握数量）")
+    public String getWordStatistics() {
+        String userId;
+        try {
+            userId = getCurrentUserId();
+        } catch (IllegalStateException e) {
+            return errorResponse(e.getMessage());
+        }
+
         log.info("[MCP-WordTool] 获取单词统计: userId={}", userId);
 
         ApiResponse<Long> learningResponse = wordService.countByStatus(userId, "LEARNING");
@@ -246,7 +290,6 @@ public class WordTool {
         long masteredCount = masteredResponse.getCode() == 200 ? masteredResponse.getData() : 0;
 
         JSONObject result = new JSONObject();
-        result.put("userId", userId);
         result.put("totalWords", learningCount + masteredCount);
         result.put("learningWords", learningCount);
         result.put("masteredWords", masteredCount);

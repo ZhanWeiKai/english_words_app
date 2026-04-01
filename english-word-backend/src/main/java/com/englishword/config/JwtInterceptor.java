@@ -1,5 +1,6 @@
 package com.englishword.config;
 
+import com.englishword.context.UserContext;
 import com.englishword.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +28,10 @@ public class JwtInterceptor implements HandlerInterceptor {
 
             request.setAttribute("userId", userId);
             request.setAttribute("username", username);
+
+            // 设置用户上下文，供 MCP 工具使用
+            UserContext.setCurrentUser(userId, username);
+
             return true;
         }
 
@@ -34,6 +39,12 @@ public class JwtInterceptor implements HandlerInterceptor {
         response.setContentType("application/json;charset=UTF-8");
         response.getWriter().write("{\"code\":401,\"message\":\"未授权或Token无效\",\"data\":null}");
         return false;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        // 请求结束后清除用户上下文
+        UserContext.clear();
     }
 
     private String extractToken(HttpServletRequest request) {

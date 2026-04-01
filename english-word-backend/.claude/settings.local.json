@@ -68,7 +68,21 @@
       "Bash(ssh ubuntu@119.91.206.195 \"docker compose -f ~/projects/english-word-app/docker-compose.yml logs --tail=30 app 2>&1 | tail -20\")",
       "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" spring-boot:run 2>&1 | head -100)",
       "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean package -DskipTests 2>&1 | tail -5)",
-      "Bash(scp C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar ubuntu@119.91.206.195:~/projects/english-word-app/target/ && ssh ubuntu@119.91.206.195 \"cd ~/projects/english-word-app && docker compose restart app && sleep 15 && docker compose logs --tail=40 app 2>&1 | grep -E 'MCP|工具|成功|失败|启动成功'\")"
+      "Bash(scp C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar ubuntu@119.91.206.195:~/projects/english-word-app/target/ && ssh ubuntu@119.91.206.195 \"cd ~/projects/english-word-app && docker compose restart app && sleep 15 && docker compose logs --tail=40 app 2>&1 | grep -E 'MCP|工具|成功|失败|启动成功'\")",
+      "Bash(scp C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar ubuntu@119.91.206.195:~/projects/english-word-app/target/ && ssh ubuntu@119.91.206.195 \"cd ~/projects/english-word-app && docker compose restart app && sleep 15 && docker compose logs --tail=30 app 2>&1 | grep -E 'MCP|工具|成功|失败|启动成功'\")",
+      "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean package -DskipTests 2>&1 | tail -30)",
+      "Bash(scp C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar root@119.91.206.195:/root/english-word-app/target/)",
+      "Bash(scp -o PreferredAuthentications=password C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar root@119.91.206.195:/root/english-word-app/target/)",
+      "Bash(ls -la /development-env-setup 2>/dev/null || ls -la C:/claude-project/english-word-app/development-env-setup 2>/dev/null || find /c/claude-project -name \"*development-env*\" -type d 2>/dev/null | head -5)",
+      "Bash(scp C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar ubuntu@119.91.206.195:/root/english-word-app/target/)",
+      "Bash(scp C:/claude-project/english-word-app/english-word-backend/target/english-word-backend-1.0.0.jar ubuntu@119.91.206.195:~/)",
+      "Bash(ssh ubuntu@119.91.206.195 \"ls -la /root/ 2>/dev/null || echo 'Cannot access /root'; ls -la /home/ubuntu/\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"ls -la ~/projects/ && docker ps -a 2>/dev/null | head -10\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"ls -la ~/projects/english-word-app/ && cat ~/projects/english-word-app/docker-compose.yml 2>/dev/null | head -30\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"cat ~/projects/english-word-app/docker-compose.yml\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"ls -la ~/projects/english-word-app/target/\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"cp ~/english-word-backend-1.0.0.jar ~/projects/english-word-app/target/ && cd ~/projects/english-word-app && docker compose restart app && sleep 5 && docker compose logs --tail=30 app\")",
+      "Bash(ssh ubuntu@119.91.206.195 \"sleep 20 && docker logs english-word-app --tail=50 2>&1\")"
     ]
   }
 }

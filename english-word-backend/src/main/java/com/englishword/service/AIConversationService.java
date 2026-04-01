@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONArray;
 import com.englishword.client.ChatClient;
+import com.englishword.context.UserContext;
 import com.englishword.dto.request.AIChatRequest;
 import com.englishword.dto.response.ApiResponse;
 import com.englishword.dto.response.AIChatResponse;
@@ -75,31 +76,40 @@ public class AIConversationService {
                 conversationHistory = "[]";
             }
 
-            // 2. 根据模式调用AI
+            // 2. 设置当前操作用户（供 MCP 工具跨线程使用）
+            UserContext.setCurrentOperationUser(userId, null);
+            log.info("[AIConversationService] 设置操作用户: userId={}", userId);
+
+            // 3. 根据模式调用AI
             String aiReply;
             String mode = request.getMode();
             log.info("=== AI Chat Request === Mode: {}, TrainingWords: {}, TargetWord: {}",
                     mode, request.getTrainingWords(), request.getTargetWord());
 
-            if ("word_training".equals(mode)) {
-                // 训练模式
-                aiReply = chatClient.practiceInScenario(
-                        request.getTrainingWords(),
-                        request.getScenario(),
-                        request.getMessage(),
-                        conversationHistory
-                );
-            } else {
-                log.info("chatClient.chat 通用模式");
-                // 默认：通用对话
-                aiReply = chatClient.chat(
-                        null,  // 使用默认系统提示词
-                        request.getMessage(),
-                        conversationHistory
-                );
+            try {
+                if ("word_training".equals(mode)) {
+                    // 训练模式
+                    aiReply = chatClient.practiceInScenario(
+                            request.getTrainingWords(),
+                            request.getScenario(),
+                            request.getMessage(),
+                            conversationHistory
+                    );
+                } else {
+                    log.info("chatClient.chat 通用模式");
+                    // 默认：通用对话
+                    aiReply = chatClient.chat(
+                            null,  // 使用默认系统提示词
+                            request.getMessage(),
+                            conversationHistory
+                    );
+                }
+            } finally {
+                // 4. 清除操作用户（无论成功失败都要清除）
+                UserContext.clearOperationUser();
             }
 
-            // 3. 更新对话历史
+            // 5. 更新对话历史
             List<Map<String, String>> messages = parseMessages(conversationHistory);
             messages.add(Map.of("role", "user", "content", request.getMessage()));
             messages.add(Map.of("role", "assistant", "content", aiReply));
