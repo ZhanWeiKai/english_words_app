@@ -58,7 +58,8 @@ private val CancelBgColor = Color(0xFFFFEBEE) // red.shade50 equivalent
 @Composable
 fun AIChatScreen(
     onBack: () -> Unit,
-    selectedWords: List<Word> = emptyList()
+    selectedWords: List<Word> = emptyList(),
+    conversationId: String? = null
 ) {
     // Use ViewModel for state management
     val viewModel: AIChatViewModel = viewModel()
@@ -76,10 +77,12 @@ fun AIChatScreen(
     // Check if this is training mode
     val isTrainingMode = selectedWords.isNotEmpty()
 
-    // Initialize with training message if in training mode
-    LaunchedEffect(isTrainingMode) {
+    // Initialize with training message if in training mode, or load existing conversation
+    LaunchedEffect(isTrainingMode, conversationId) {
         if (isTrainingMode) {
             viewModel.initTrainingMode(selectedWords)
+        } else if (conversationId != null) {
+            viewModel.loadExistingConversation(conversationId)
         }
     }
 

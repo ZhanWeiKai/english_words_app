@@ -75,4 +75,15 @@ interface ApiService {
     fun getConversationHistory(
         @Query("conversationId") conversationId: String?
     ): Call<ApiResponse<List<ChatMessage>>>
+
+    @GET("ai/conversations")
+    suspend fun getConversationList(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10
+    ): ApiResponse<List<AIConversation>>
+
+    @GET("ai/conversations/{conversationId}")
+    suspend fun getConversationDetail(
+        @Path("conversationId") conversationId: String
+    ): ApiResponse<AIConversation>
 }

@@ -175,3 +175,35 @@ data class PageResponse<T>(
     val last: Boolean = true,
     val empty: Boolean = true
 )
+
+/**
+ * AI Conversation model for conversation list
+ */
+data class AIConversation(
+    @SerializedName("conversationId")
+    var conversationId: String? = null,
+
+    @SerializedName("userId")
+    var userId: String? = null,
+
+    @SerializedName("messages")
+    var messages: String? = null,  // JSON string
+
+    @SerializedName("contextWordId")
+    var contextWordId: String? = null,
+
+    @SerializedName("createdAt")
+    var createdAt: String? = null,
+
+    @SerializedName("updatedAt")
+    var updatedAt: String? = null
+) {
+    /**
+     * Get preview text from messages (first user message or empty)
+     */
+    fun getPreview(): String {
+        // Try to extract first user message from JSON
+        // Simple approach: just show date if parsing is complex
+        return createdAt?.takeIf { it.isNotEmpty() } ?: "对话"
+    }
+}

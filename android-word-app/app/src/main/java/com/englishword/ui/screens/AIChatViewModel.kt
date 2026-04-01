@@ -236,4 +236,45 @@ class AIChatViewModel : ViewModel() {
         _addedWords.value = emptySet()
         _addingWords.value = emptySet()
     }
+
+    /**
+     * Load an existing conversation by conversationId
+     */
+    fun loadExistingConversation(conversationId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
+            try {
+                val response = apiService.getConversationDetail(conversationId)
+                if (response.isSuccess && response.data != null) {
+                    val conversation = response.data!!
+                    _conversationId.value = conversation.conversationId
+
+                    // Parse messages JSON
+                    val messagesJson = conversation.messages
+                    if (!messagesJson.isNullOrBlank()) {
+                        val jsonArray = org.json.JSONArray(messagesJson)
+                        val loadedMessages = mutableListOf<ChatMessage>()
+                        for (i in 0 until jsonArray.length()) {
+                            val obj = jsonArray.getJSONObject(i)
+                            loadedMessages.add(ChatMessage().apply {
+                                role = obj.optString("role")
+                                content = obj.optString("content")
+                                this.conversationId = conversationId
+                            })
+                        }
+                        _messages.value = loadedMessages
+                    }
+                } else {
+                    _error.value = response.message ?: "加载对话失败"
+                }
+            } catch (e: Exception) {
+                Log.e("AIChatViewModel", "Failed to load conversation", e)
+                _error.value = "加载失败: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 }

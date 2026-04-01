@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -132,11 +133,30 @@ fun EnglishWordApp(tokenManager: TokenManager) {
                 )
             }
 
+            // AI Chat Screen (view existing conversation)
+            composable("aichat_detail?conversationId={conversationId}") { backStackEntry ->
+                val convId = backStackEntry.arguments?.getString("conversationId") ?: ""
+                AIChatScreen(
+                    onBack = { navController.popBackStack() },
+                    selectedWords = emptyList(),
+                    conversationId = convId
+                )
+            }
+
             // Training Summary Screen
             composable("training") {
                 TrainingSummaryScreen(
                     onBack = { navController.popBackStack() },
                     onContinue = { navController.popBackStack() }
+                )
+            }
+
+            // Conversation List Screen (History)
+            composable("history") {
+                ConversationListScreen(
+                    onConversationClick = { conversationId ->
+                        navController.navigate("aichat_detail?conversationId=$conversationId")
+                    }
                 )
             }
         }
@@ -147,7 +167,8 @@ fun EnglishWordApp(tokenManager: TokenManager) {
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
         BottomNavItem("wordvault", "Vault", Icons.Default.Home),
-        BottomNavItem("aichat", "AI Chat", Icons.Default.Chat)
+        BottomNavItem("aichat", "AI Chat", Icons.Default.Chat),
+        BottomNavItem("history", "History", Icons.Default.History)
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
