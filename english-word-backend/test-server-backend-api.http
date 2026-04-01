@@ -22,3 +22,34 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyNDE3NzEwZS04NDI2LTRmZ
   "message": "帮我添加 book 单词",
   "conversationId": null
 }
+
+### =============================================
+### ASR 语音识别测试（远程服务器）
+### =============================================
+
+### 语音识别 - 上传音频文件
+POST http://119.91.206.195:8885/api/asr/recognize
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
+Content-Type: audio/wav
+
+< ./hello_world_female2.wav
+--WebAppBoundary
+Content-Disposition: form-data; name="language"
+
+zh
+--WebAppBoundary--
+
+### 语音识别 - 英文音频（自动检测语言）
+POST http://119.91.206.195:8885/api/asr/recognize
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
+Content-Type: audio/wav
+
+< ./hello_world_female2.wav

@@ -94,6 +94,20 @@ mcp:
       base-packages:
         - com.englishword.mcptool.tools
 
+# DashScope 配置（ASR语音识别 / TTS语音合成）
+dashscope:
+  api-key: sk-f064b98676d8401fb6139d9a5e2cf78b
+  asr:
+    model: fun-asr-mtl  # 多语言语音识别
+
+# ASR 文件上传配置
+asr:
+  upload-dir: ./uploads/asr
+
+# 服务器公网地址（用于生成音频文件的可访问URL）
+app:
+  base-url: http://119.91.206.195:8885
+
 
 
 

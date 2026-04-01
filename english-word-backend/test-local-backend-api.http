@@ -8,17 +8,89 @@ Content-Type: application/json
 }
 
 > {%
-    // 从返回 JSON 中提取 token
-    const json = JSON.parse(response.body);
-    client.global.set("token", json.data.token);
+    client.global.set("token", response.body.data.token);
 %}
 
-###
+### AI聊天 - 创建新对话
 POST http://localhost:8885/api/ai/chat
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1c2VySWQiOiIyNDE3NzEwZS04NDI2LTRmZTgtYmM4NC00OWVkNTcwZWU5OWEiLCJ1c2VybmFtZSI6InRlc3R1c2VyIiwic3ViIjoidGVzdHVzZXIiLCJpYXQiOjE3NzUwMTU2NTgsImV4cCI6MTc3NTYyMDQ1OH0.Jz84CE74pG4Biv6LFXPObs9AleQbDleQvzSJDeS_HBBUt1vshXbNZT_MTgt31XL_BrJ8zpTuGxWiDgUwd6SKmQ
+Authorization: Bearer {{token}}
 
 {
-  "message": "帮我添加 book 单词",
+  "message": "你好啊，我在测试对话历史",
   "conversationId": null
 }
+
+> {%
+    if (response.body.data && response.body.data.conversationId) {
+        client.global.set("conversationId", response.body.data.conversationId);
+    }
+%}
+
+### AI聊天 - 继续对话
+POST http://localhost:8885/api/ai/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "再帮我添加 apple 单词",
+  "conversationId": "{{conversationId}}"
+}
+
+### 获取对话列表
+GET http://localhost:8885/api/ai/conversations?page=0&size=10
+Authorization: Bearer {{token}}
+
+### 获取单个对话详情
+GET http://localhost:8885/api/ai/conversations/{{conversationId}}
+Authorization: Bearer {{token}}
+
+### =============================================
+### ASR 语音识别测试
+### =============================================
+
+### 语音识别 - 中文音频（使用本地文件）
+### 注意：需要先下载测试音频文件到本地
+### 下载命令: curl -o test_audio.wav "https://dashscope.oss-cn-beijing.aliyuncs.com/samples/audio/paraformer/hello_world_female2.wav"
+POST http://localhost:8885/api/asr/recognize
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
+Content-Type: audio/wav
+
+< ./hello_world_female2.wav
+--WebAppBoundary
+Content-Disposition: form-data; name="language"
+
+zh
+--WebAppBoundary--
+
+### 语音识别 - 英文音频（自动检测语言）
+POST http://localhost:8885/api/asr/recognize
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
+Content-Type: audio/wav
+
+< ./hello_world_female2.wav
+--WebAppBoundary--
+
+### 语音识别 - Android录音文件 (m4a格式)
+POST http://localhost:8885/api/asr/recognize
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
+Content-Type: audio/wav
+
+< ./hello_world_female2.wav
+--WebAppBoundary
+Content-Disposition: form-data; name="language"
+
+en
+--WebAppBoundary--

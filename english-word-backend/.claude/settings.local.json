@@ -82,7 +82,8 @@
       "Bash(ssh ubuntu@119.91.206.195 \"cat ~/projects/english-word-app/docker-compose.yml\")",
       "Bash(ssh ubuntu@119.91.206.195 \"ls -la ~/projects/english-word-app/target/\")",
       "Bash(ssh ubuntu@119.91.206.195 \"cp ~/english-word-backend-1.0.0.jar ~/projects/english-word-app/target/ && cd ~/projects/english-word-app && docker compose restart app && sleep 5 && docker compose logs --tail=30 app\")",
-      "Bash(ssh ubuntu@119.91.206.195 \"sleep 20 && docker logs english-word-app --tail=50 2>&1\")"
+      "Bash(ssh ubuntu@119.91.206.195 \"sleep 20 && docker logs english-word-app --tail=50 2>&1\")",
+      "Bash(curl -s http://localhost:8885/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"testuser\",\"password\":\"123456\"}' 2>&1 || echo \"服务未启动或连接失败\")"
     ]
   }
 }

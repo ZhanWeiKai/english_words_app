@@ -1,8 +1,10 @@
 package com.englishword.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -10,6 +12,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     private final JwtInterceptor jwtInterceptor;
+
+    @Value("${asr.upload-dir:./uploads/asr}")
+    private String asrUploadDir;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -30,7 +35,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/favicon.ico",
                         "/ws/**",
                         "/sse",
-                        "/sse/**"
+                        "/sse/**",
+                        "/asr/files/**"  // ASR音频文件不需要JWT认证，DashScope需要访问
                 );
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 暴露 ASR 上传目录为静态资源，让 DashScope 可以通过 URL 下载音频文件
+        registry.addResourceHandler("/asr/files/**")
+                .addResourceLocations("file:" + asrUploadDir + "/");
     }
 }
