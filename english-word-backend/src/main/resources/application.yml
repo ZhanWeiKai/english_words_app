@@ -79,7 +79,7 @@ ai:
     # MCP 客户端配置（AI 调用工具）
     mcp:
       enabled: true
-      server-url: ws://192.168.1.68:8004/mcp_endpoint/call/
+      server-url: ws://119.91.206.195:8004/mcp_endpoint/call/
       token: mvPd7HCTRs1CB7Gc/6M4AcrmtRVnQjEhKvDWbn8Nq6w=
       connect-timeout: 10
 
@@ -87,7 +87,7 @@ ai:
 mcp:
   tool:
     enabled: true
-    server-url: ws://192.168.1.68:8004/mcp_endpoint/mcp/
+    server-url: ws://119.91.206.195:8004/mcp_endpoint/mcp/
     token: mvPd7HCTRs1CB7Gc/6M4AcrmtRVnQjEhKvDWbn8Nq6w=
     connect-timeout: 10
     scan:
