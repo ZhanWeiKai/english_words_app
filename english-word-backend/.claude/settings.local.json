@@ -41,7 +41,8 @@
       "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean compile -DskipTests 2>&1 | tail -50)",
       "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean compile -DskipTests 2>&1 | tail -30)",
       "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean compile -DskipTests 2>&1 | tail -20)",
-      "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean compile -DskipTests 2>&1 | tail -25)"
+      "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean compile -DskipTests 2>&1 | tail -25)",
+      "Bash(cd C:/claude-project/english-word-app/english-word-backend && \"C:\\\\Program Files\\\\JetBrains\\\\IntelliJ IDEA 2025.2.5\\\\plugins\\\\maven\\\\lib\\\\maven3\\\\bin\\\\mvn.cmd\" clean compile -DskipTests 2>&1 | tail -15)"
     ]
   }
 }
