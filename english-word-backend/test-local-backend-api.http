@@ -17,7 +17,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "message": "你好啊，我在测试对话历史",
+  "message": "帮我添加family这个单词",
   "conversationId": null
 }
 
@@ -60,7 +60,7 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
 Content-Type: audio/wav
 
-< ./hello_world_female2.wav
+< ./abc.wav
 --WebAppBoundary
 Content-Disposition: form-data; name="language"
 
@@ -76,7 +76,7 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
 Content-Type: audio/wav
 
-< ./hello_world_female2.wav
+< ./abc.wav
 --WebAppBoundary--
 
 ### 语音识别 - Android录音文件 (m4a格式)
@@ -88,9 +88,32 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
 Content-Type: audio/wav
 
-< ./hello_world_female2.wav
+< ./abc.wav
 --WebAppBoundary
 Content-Disposition: form-data; name="language"
 
 en
 --WebAppBoundary--
+
+### =============================================
+### TTS 语音合成测试
+### =============================================
+
+### TTS - 英文文本合成（返回MP3音频）
+POST http://localhost:8885/api/tts/synthesize?text=Hello!%20Welcome%20to%20the%20English%20Word%20App.
+Authorization: Bearer {{token}}
+
+
+### TTS - 中文文本合成
+POST http://localhost:8885/api/tts/synthesize?text=你好，欢迎使用英语单词学习应用。
+Authorization: Bearer {{token}}
+
+### TTS - 中英混合
+POST http://localhost:8885/api/tts/synthesize?text=Hello!%20%E4%BB%8A%E5%A4%A9%E5%A4%A9%E6%B0%94%E7%9C%9F%E4%B8%8D%E9%94%99
+Authorization: Bearer {{token}}
+
+
+
+### TTS - 指定音色
+POST http://localhost:8885/api/tts/synthesize?text=Good%20morning!&voice=longanyang
+Authorization: Bearer {{token}}

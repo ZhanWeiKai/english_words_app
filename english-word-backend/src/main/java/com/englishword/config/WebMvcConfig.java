@@ -16,6 +16,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${asr.upload-dir:./uploads/asr}")
     private String asrUploadDir;
 
+    @Value("${tts.output-dir:./uploads/tts}")
+    private String ttsOutputDir;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
@@ -36,7 +39,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/ws/**",
                         "/sse",
                         "/sse/**",
-                        "/asr/files/**"  // ASR音频文件不需要JWT认证，DashScope需要访问
+                        "/asr/files/**",  // ASR音频文件不需要JWT认证，DashScope需要访问
+                        "/tts/files/**"   // TTS音频文件不需要JWT认证
                 );
     }
 
@@ -45,5 +49,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // 暴露 ASR 上传目录为静态资源，让 DashScope 可以通过 URL 下载音频文件
         registry.addResourceHandler("/asr/files/**")
                 .addResourceLocations("file:" + asrUploadDir + "/");
+
+        // 暴露 TTS 输出目录为静态资源，让客户端可以下载合成的音频文件
+        registry.addResourceHandler("/tts/files/**")
+                .addResourceLocations("file:" + ttsOutputDir + "/");
     }
 }
