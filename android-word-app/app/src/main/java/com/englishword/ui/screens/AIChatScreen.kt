@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -644,9 +645,9 @@ fun VoiceInputArea(
 fun ChatMessageItem(message: ChatMessage) {
     val isUser = message.role == "user"
 
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+        horizontalAlignment = if (isUser) Alignment.End else Alignment.Start
     ) {
         Surface(
             color = if (isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
@@ -661,6 +662,23 @@ fun ChatMessageItem(message: ChatMessage) {
                     text = message.content ?: "",
                     modifier = Modifier.padding(12.dp),
                     color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+
+        // TTS播放按钮（仅AI消息显示）
+        if (!isUser && !message.content.isNullOrBlank()) {
+            IconButton(
+                onClick = {
+                    // TODO: 调用TTS播放
+                },
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.VolumeUp,
+                    contentDescription = "播放语音",
+                    tint = IconColor,
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
