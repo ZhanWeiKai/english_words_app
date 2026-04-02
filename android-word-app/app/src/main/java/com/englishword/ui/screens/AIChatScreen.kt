@@ -1,7 +1,11 @@
 package com.englishword.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,8 +40,10 @@ import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import com.englishword.audio.AudioRecorder
 import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
 import com.englishword.data.model.WordResult
@@ -116,6 +122,35 @@ fun AIChatScreen(
     var isCancelling by remember { mutableStateOf(false) }
 
     val view = LocalView.current
+
+    // Audio recorder
+    val audioRecorder = remember { AudioRecorder(context) }
+    var currentRecordingPath by remember { mutableStateOf<String?>(null) }
+
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Toast.makeText(context, "麦克风权限已授权", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "需要麦克风权限才能使用语音功能", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Check and request permission function
+    fun checkAndRequestPermission(): Boolean {
+        val permissionStatus = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.RECORD_AUDIO
+        )
+        return if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+            true
+        } else {
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            false
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -253,15 +288,41 @@ fun AIChatScreen(
                     isRecording = isRecording,
                     isCancelling = isCancelling,
                     onRecordStart = {
+                        // Check permission first
+                        if (!checkAndRequestPermission()) {
+                            return@VoiceInputArea
+                        }
                         view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         isRecording = true
                         isCancelling = false
+                        // Start actual recording
+                        val path = audioRecorder.startRecording()
+                        if (path != null) {
+                            currentRecordingPath = path
+                            Toast.makeText(context, "开始录音...", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "录音启动失败", Toast.LENGTH_SHORT).show()
+                            isRecording = false
+                        }
                     },
                     onRecordEnd = { cancelled ->
                         if (cancelled) {
                             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                            // Cancel recording
+                            audioRecorder.cancelRecording()
+                            currentRecordingPath = null
+                            Toast.makeText(context, "录音已取消", Toast.LENGTH_SHORT).show()
                         } else {
                             view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                            // Stop recording and get file path
+                            val savedPath = audioRecorder.stopRecording()
+                            if (savedPath != null) {
+                                Toast.makeText(context, "录音保存: $savedPath", Toast.LENGTH_LONG).show()
+                                // TODO: Send audio to backend for ASR processing
+                            } else {
+                                Toast.makeText(context, "录音保存失败", Toast.LENGTH_SHORT).show()
+                            }
+                            currentRecordingPath = null
                         }
                         isRecording = false
                         isCancelling = false
@@ -273,6 +334,11 @@ fun AIChatScreen(
                         }
                     },
                     onSwitchToText = {
+                        // Cancel any ongoing recording
+                        if (isRecording) {
+                            audioRecorder.cancelRecording()
+                            currentRecordingPath = null
+                        }
                         isRecording = false
                         isCancelling = false
                         isVoiceMode = false
