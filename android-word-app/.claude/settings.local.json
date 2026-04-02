@@ -128,7 +128,8 @@
       "Bash(cd C:/claude-project/english-word-app/android-word-app && ./gradlew compileDebugKotlin 2>&1 | grep -A 5 \"error:\")",
       "Bash(cd C:/claude-project/english-word-app/android-word-app && ./gradlew compileDebugKotlin --stacktrace 2>&1 | grep -E \"\\(error|Error\\)\" | head -20)",
       "Bash(cd C:/claude-project/english-word-app/android-word-app && ./gradlew compileDebugKotlin --info 2>&1 | grep -E \"e:|\\\\.kt:\" | head -30)",
-      "Bash(adb -s 100.66.50.1:40011 install -r C:/claude-project/english-word-app/android-word-app/app/build/outputs/apk/debug/app-debug.apk)"
+      "Bash(adb -s 100.66.50.1:40011 install -r C:/claude-project/english-word-app/android-word-app/app/build/outputs/apk/debug/app-debug.apk)",
+      "Bash(cd C:/claude-project/english-word-app/android-word-app && ./gradlew assembleDebug 5>&1 | tail -30)"
     ]
   }
 }

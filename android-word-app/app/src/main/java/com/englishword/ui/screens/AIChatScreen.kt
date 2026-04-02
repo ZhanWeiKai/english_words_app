@@ -1,7 +1,9 @@
 package com.englishword.ui.screens
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -44,6 +46,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import com.englishword.audio.AudioRecorder
+import com.englishword.data.ASRService
+import com.englishword.data.RetrofitClient
 import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
 import com.englishword.data.model.WordResult
@@ -99,20 +103,9 @@ fun AIChatScreen(
         }
     }
 
-    // Show error toast
-    LaunchedEffect(error) {
-        error?.let {
-            Toast.makeText(context, "错误: $it", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    // Show success toast when word is added
+    // Track added words silently
     var previousAddedCount by remember { mutableStateOf(0) }
     LaunchedEffect(addedWords.size) {
-        if (addedWords.size > previousAddedCount) {
-            val newWord = addedWords.last()
-            Toast.makeText(context, "已添加: $newWord", Toast.LENGTH_SHORT).show()
-        }
         previousAddedCount = addedWords.size
     }
 
@@ -131,11 +124,7 @@ fun AIChatScreen(
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) {
-            Toast.makeText(context, "麦克风权限已授权", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "需要麦克风权限才能使用语音功能", Toast.LENGTH_LONG).show()
-        }
+        // Permission result handled silently
     }
 
     // Check and request permission function
@@ -219,27 +208,20 @@ fun AIChatScreen(
                             addedWords = addedWords,
                             addingWords = addingWords,
                             onAddWord = { wordResult ->
-                                Toast.makeText(context, "调用 addWord: word=${wordResult.word}, isNull=${wordResult.word == null}", Toast.LENGTH_LONG).show()
-
                                 // Check if word is null
                                 if (wordResult.word == null) {
-                                    Toast.makeText(context, "wordResult.word 是 null!", Toast.LENGTH_LONG).show()
                                     return@WordSearchResultMessage
                                 }
 
                                 // Check if already added or adding
                                 if (addedWords.contains(wordResult.word)) {
-                                    Toast.makeText(context, "单词已添加: ${wordResult.word}", Toast.LENGTH_SHORT).show()
                                     return@WordSearchResultMessage
                                 }
                                 if (addingWords.contains(wordResult.word)) {
-                                    Toast.makeText(context, "正在添加中: ${wordResult.word}", Toast.LENGTH_SHORT).show()
                                     return@WordSearchResultMessage
                                 }
 
-                                Toast.makeText(context, "准备调用 viewModel.addWord", Toast.LENGTH_SHORT).show()
                                 viewModel.addWord(wordResult)
-                                Toast.makeText(context, "viewModel.addWord 已返回", Toast.LENGTH_SHORT).show()
                             }
                         )
                     } else {
@@ -299,9 +281,7 @@ fun AIChatScreen(
                         val path = audioRecorder.startRecording()
                         if (path != null) {
                             currentRecordingPath = path
-                            Toast.makeText(context, "开始录音...", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "录音启动失败", Toast.LENGTH_SHORT).show()
                             isRecording = false
                         }
                     },
@@ -311,16 +291,29 @@ fun AIChatScreen(
                             // Cancel recording
                             audioRecorder.cancelRecording()
                             currentRecordingPath = null
-                            Toast.makeText(context, "录音已取消", Toast.LENGTH_SHORT).show()
                         } else {
                             view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
                             // Stop recording and get file path
                             val savedPath = audioRecorder.stopRecording()
                             if (savedPath != null) {
-                                Toast.makeText(context, "录音保存: $savedPath", Toast.LENGTH_LONG).show()
-                                // TODO: Send audio to backend for ASR processing
-                            } else {
-                                Toast.makeText(context, "录音保存失败", Toast.LENGTH_SHORT).show()
+                                // Call ASR API and send to AI
+                                scope.launch {
+                                    try {
+                                        val text = recognizeSpeech(context, savedPath)
+                                        if (text != null && text.isNotBlank()) {
+                                            // Send recognized text to AI
+                                            val mode = if (isTrainingMode) "word_training" else "word_search"
+                                            val targetWord = if (isTrainingMode) selectedWords.firstOrNull()?.word else null
+                                            viewModel.sendMessage(
+                                                message = text,
+                                                mode = mode,
+                                                targetWord = targetWord
+                                            )
+                                        }
+                                    } catch (e: Exception) {
+                                        // Silent fail
+                                    }
+                                }
                             }
                             currentRecordingPath = null
                         }
@@ -710,5 +703,18 @@ fun WordSearchResultMessage(
                 onAddClick = { onAddWord(wordResult) }
             )
         }
+    }
+}
+
+/**
+ * Helper function to call ASR API
+ */
+private suspend fun recognizeSpeech(context: Context, audioFilePath: String): String? {
+    return try {
+        val apiService = RetrofitClient.getApiService()
+        ASRService.recognizeSpeech(apiService, audioFilePath)
+    } catch (e: Exception) {
+        Log.e("AIChatScreen", "ASR call failed", e)
+        null
     }
 }

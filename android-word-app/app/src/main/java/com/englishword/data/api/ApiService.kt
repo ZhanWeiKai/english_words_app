@@ -4,6 +4,7 @@ import com.englishword.data.model.*
 import com.englishword.data.model.AIChatRequest
 import com.englishword.data.model.AIChatResponse
 import com.englishword.data.model.WordListResponse
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -86,4 +87,13 @@ interface ApiService {
     suspend fun getConversationDetail(
         @Path("conversationId") conversationId: String
     ): ApiResponse<AIConversation>
+
+    // ==================== ASR APIs ====================
+
+    @Multipart
+    @POST("asr/recognize")
+    suspend fun recognizeSpeech(
+        @Part file: MultipartBody.Part,
+        @Part("language") language: String?
+    ): ASRResponse
 }

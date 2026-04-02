@@ -207,3 +207,11 @@ data class AIConversation(
         return createdAt?.takeIf { it.isNotEmpty() } ?: "对话"
     }
 }
+
+/**
+ * ASR (Speech Recognition) Response
+ */
+data class ASRResponse(
+    val language: String? = null,
+    val text: String? = null
+)
