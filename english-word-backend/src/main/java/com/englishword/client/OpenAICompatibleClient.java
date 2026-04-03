@@ -397,6 +397,11 @@ public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
 
                                 String chunk = parseStreamChunk(data);
                                 if (chunk != null && !chunk.isEmpty()) {
+                                    // 调试日志：记录每个 chunk（包括空格）
+                                    log.info("[SSE-Chunk] content='{}', len={}, hex={}",
+                                            chunk.replace(" ", "␣"),  // 空格用特殊符号显示
+                                            chunk.length(),
+                                            bytesToHex(chunk.getBytes(StandardCharsets.UTF_8)));
                                     fullResponse.append(chunk);
                                     callback.onChunk(chunk);
                                 }
@@ -678,5 +683,16 @@ public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
     private String maskApiKey(String url) {
         if (url == null) return "null";
         return url.replaceAll("(https?://[^/]+).*", "$1/**");
+    }
+
+    /**
+     * 字节数组转十六进制字符串（用于调试）
+     */
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02X ", b));
+        }
+        return sb.toString().trim();
     }
 }
