@@ -51,6 +51,7 @@ import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
@@ -62,6 +63,8 @@ import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
 import com.englishword.data.model.WordResult
 import com.englishword.ui.components.WordResultCard
+import io.noties.markwon.Markwon
+import android.widget.TextView
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -694,9 +697,9 @@ fun ChatMessageItem(message: ChatMessage) {
                             color = Color.White
                         )
                     } else {
-                        // AI消息：格式化英文内容
-                        Text(
-                            text = formatAIContent(messageContent ?: ""),
+                        // AI消息：Markdown渲染
+                        MarkdownText(
+                            markdown = messageContent ?: "",
                             modifier = Modifier.padding(12.dp)
                         )
                     }
@@ -807,37 +810,27 @@ private suspend fun recognizeSpeech(context: Context, audioFilePath: String): St
 }
 
 /**
- * Format AI content with proper spacing
- * - Add spacing between Chinese and English
- * - Use normal black font color
+ * Markdown文本渲染组件
+ * 使用Markwon库渲染Markdown格式
  */
-private fun formatAIContent(content: String): AnnotatedString {
-    return buildAnnotatedString {
-        val sb = StringBuilder()
-        for (i in content.indices) {
-            val char = content[i]
-            val isChinese = char.code in 0x4E00..0x9FFF
-            val isEnglish = char.code in 0x41..0x5A || char.code in 0x61..0x7A
+@Composable
+fun MarkdownText(
+    markdown: String,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val markwon = remember { Markwon.create(context) }
 
-            // 检查前一个字符
-            if (i > 0 && isChinese) {
-                val prevChar = content[i - 1]
-                val prevIsEnglish = prevChar.code in 0x41..0x5A || prevChar.code in 0x61..0x7A
-                if (prevIsEnglish) {
-                    sb.append(' ') // 英文后跟中文，加空格
-                }
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            TextView(ctx).apply {
+                setTextColor(android.graphics.Color.BLACK)
+                textSize = 16f
             }
-
-            if (i > 0 && isEnglish) {
-                val prevChar = content[i - 1]
-                val prevIsChinese = prevChar.code in 0x4E00..0x9FFF
-                if (prevIsChinese) {
-                    sb.append(' ') // 中文后跟英文，加空格
-                }
-            }
-
-            sb.append(char)
+        },
+        update = { textView ->
+            markwon.setMarkdown(textView, markdown)
         }
-        append(sb.toString())
-    }
+    )
 }

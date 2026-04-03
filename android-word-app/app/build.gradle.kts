@@ -86,6 +86,9 @@ dependencies {
     // Animations
     implementation("androidx.compose.animation:animation:1.6.2")
 
+    // Markdown rendering
+    implementation("io.noties.markwon:core:4.6.2")
+
     // Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
