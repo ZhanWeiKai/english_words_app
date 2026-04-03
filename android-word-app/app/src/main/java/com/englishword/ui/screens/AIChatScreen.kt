@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
@@ -666,12 +668,19 @@ fun ChatMessageItem(message: ChatMessage) {
                 .clip(MaterialTheme.shapes.medium)
         ) {
             // 使用 SelectionContainer 包裹 Text 以支持文本选择（长按全选/复制）
-            SelectionContainer {
-                Text(
-                    text = messageContent ?: "",
-                    modifier = Modifier.padding(12.dp),
-                    color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
-                )
+            // 自定义文本选择颜色，使用蓝色而非主题橙色
+            val customTextSelectionColors = TextSelectionColors(
+                handleColor = Color(0xFF2196F3), // 蓝色手柄
+                backgroundColor = Color(0xFF2196F3).copy(alpha = 0.2f) // 蓝色半透明背景
+            )
+            CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+                SelectionContainer {
+                    Text(
+                        text = messageContent ?: "",
+                        modifier = Modifier.padding(12.dp),
+                        color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
 
