@@ -37,6 +37,10 @@ class AIChatViewModel : ViewModel() {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
+    // 当前正在调用的工具名称（用于显示loading提示）
+    private val _toolCallStatus = MutableStateFlow<String?>(null)
+    val toolCallStatus: StateFlow<String?> = _toolCallStatus.asStateFlow()
+
     // Track added words in current session
     private val _addedWords = MutableStateFlow<Set<String>>(emptySet())
     val addedWords: StateFlow<Set<String>> = _addedWords.asStateFlow()
@@ -151,7 +155,14 @@ class AIChatViewModel : ViewModel() {
                                 _conversationId.value = event.id
                                 Log.d(TAG, "Received conversationId: ${event.id}")
                             }
+                            is SSEEvent.ToolCall -> {
+                                // 显示工具调用状态
+                                _toolCallStatus.value = event.toolName
+                                Log.d(TAG, "Tool call: ${event.toolName}, args: ${event.arguments}")
+                            }
                             is SSEEvent.Message -> {
+                                // 收到消息时清除工具调用状态
+                                _toolCallStatus.value = null
                                 // 第一次收到消息时添加AI消息占位符
                                 if (!aiMsgAdded) {
                                     addEmptyAIMessage()

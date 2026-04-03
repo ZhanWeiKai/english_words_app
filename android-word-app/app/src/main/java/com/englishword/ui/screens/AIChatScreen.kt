@@ -89,6 +89,7 @@ fun AIChatScreen(
     val context = LocalContext.current
     val messages by viewModel.messages.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val toolCallStatus by viewModel.toolCallStatus.collectAsState()
     val addedWords by viewModel.addedWords.collectAsState()
     val addingWords by viewModel.addingWords.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -244,12 +245,13 @@ fun AIChatScreen(
                 }
 
                 // Show loading indicator when:
+                // Show loading indicator when:
                 // 1. isLoading = true
                 // 2. Last message is from user (waiting for AI response)
                 // 或者最后一条AI消息内容为空
                 val lastMsg = messages.lastOrNull()
                 val showLoading = isLoading && (lastMsg?.role == "user" || lastMsg?.content.isNullOrBlank())
-                if (showLoading) {
+                if (showLoading || toolCallStatus != null) {
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -271,7 +273,10 @@ fun AIChatScreen(
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "AI is thinking...",
+                                        text = when {
+                                            toolCallStatus != null -> "🔧 正在调用 $toolCallStatus..."
+                                            else -> "AI is thinking..."
+                                        },
                                         color = MaterialTheme.colorScheme.onSurface,
                                         style = MaterialTheme.typography.bodyMedium
                                     )

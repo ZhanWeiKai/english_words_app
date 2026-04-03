@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 sealed class SSEEvent {
     data class ConversationId(val id: String) : SSEEvent()
+    data class ToolCall(val toolName: String, val arguments: String) : SSEEvent()
     data class Message(val content: String) : SSEEvent()
     object Done : SSEEvent()
 }
@@ -108,6 +109,18 @@ class SSEClient(private val baseUrl: String) {
                                     "conversationId" -> {
                                         Log.d(TAG, "SSE conversationId: $data")
                                         send(SSEEvent.ConversationId(data))
+                                    }
+                                    "tool_call" -> {
+                                        // 解析工具调用JSON
+                                        try {
+                                            val json = org.json.JSONObject(data)
+                                            val toolName = json.optString("tool", "unknown")
+                                            val arguments = json.optString("arguments", "")
+                                            Log.d(TAG, "SSE tool_call: tool=$toolName, args=$arguments")
+                                            send(SSEEvent.ToolCall(toolName, arguments))
+                                        } catch (e: Exception) {
+                                            Log.e(TAG, "Failed to parse tool_call data: $data", e)
+                                        }
                                     }
                                     "message" -> {
                                         Log.d(TAG, "SSE message: '$data' len=${data.length}")
