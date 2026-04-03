@@ -27,6 +27,17 @@ public interface ChatClient {
          * 发生错误
          */
         void onError(String error);
+
+        /**
+         * 工具调用通知（可选实现）
+         * 当 AI 决定调用 MCP 工具时触发，前端可显示 "正在调用 xxx..."
+         *
+         * @param toolName 工具名称
+         * @param arguments 工具参数（JSON 字符串）
+         */
+        default void onToolCall(String toolName, String arguments) {
+            // 默认空实现，保持向后兼容
+        }
     }
 
     /**

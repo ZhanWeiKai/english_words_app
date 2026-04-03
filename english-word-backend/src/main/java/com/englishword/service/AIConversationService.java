@@ -224,6 +224,12 @@ public class AIConversationService {
                                 UserContext.clearOperationUser();
                                 emitter.error(new RuntimeException(error));
                             }
+
+                            @Override
+                            public void onToolCall(String toolName, String arguments) {
+                                // 发送工具调用事件给前端
+                                emitter.next("__TOOL_CALL__:" + toolName);
+                            }
                         }
                 );
 

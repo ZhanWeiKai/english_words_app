@@ -76,6 +76,13 @@ public class AIController {
                                 .data(chunk.substring(20))  // 去掉前缀
                                 .build();
                     }
+                    // 工具调用事件
+                    if (chunk.startsWith("__TOOL_CALL__:")) {
+                        return ServerSentEvent.<String>builder()
+                                .event("tool_call")
+                                .data(chunk.substring(14))  // 只返回工具名
+                                .build();
+                    }
                     // [DONE] 标记
                     if ("[DONE]".equals(chunk)) {
                         return ServerSentEvent.<String>builder()

@@ -327,8 +327,13 @@ public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
     public void chatStream(String systemPrompt, String userMessage,
                            String conversationHistory, StreamCallback callback) {
         try {
-            // 目前流式模式不支持工具调用，直接使用简单流式
-            chatStreamSimple(systemPrompt, userMessage, conversationHistory, callback);
+            // 如果 MCP 就绪，使用支持工具调用的流式方法
+            if (mcpReady && mcpFunctions != null && !mcpFunctions.isEmpty()) {
+                log.info("[Stream-MCP] 使用支持工具调用的流式模式");
+                chatStreamWithTools(systemPrompt, userMessage, conversationHistory, callback);
+            } else {
+                chatStreamSimple(systemPrompt, userMessage, conversationHistory, callback);
+            }
         } catch (Exception e) {
             log.error("AI API stream call exception", e);
             callback.onError("AI服务出现错误：" + e.getMessage());
@@ -412,6 +417,112 @@ public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
                 callback.onError(e.getMessage());
             }
         });
+    }
+
+    /**
+     * 支持 MCP 工具调用的流式方法
+     *
+     * 流程：
+     * 1. 先用非流式请求检测是否需要工具调用
+     * 2. 如果需要，执行工具并通知前端，然后递归处理
+     * 3. 如果不需要，流式输出内容
+     */
+    private void chatStreamWithTools(String systemPrompt, String userMessage,
+                                      String conversationHistory, StreamCallback callback) {
+        executorService.submit(() -> {
+            try {
+                JSONArray messages = buildMessages(systemPrompt, userMessage, conversationHistory);
+                processStreamWithTools(messages, callback, 0);
+            } catch (Exception e) {
+                log.error("[Stream-MCP] Error", e);
+                callback.onError(e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 递归处理流式请求，支持多轮工具调用
+     */
+    private void processStreamWithTools(JSONArray messages, StreamCallback callback, int iteration) {
+        if (iteration >= 5) {
+            callback.onError("工具调用次数超过限制");
+            return;
+        }
+
+        try {
+            // 构建带 tools 的请求（非流式，获取完整响应来判断是否需要工具）
+            JSONObject requestBody = buildRequestBody(null, null, null, messages);
+            requestBody.put("tools", mcpFunctions);
+
+            JSONObject response = sendRequest(requestBody);
+            JSONObject message = response.getJSONArray("choices")
+                    .getJSONObject(0)
+                    .getJSONObject("message");
+
+            JSONArray toolCalls = message.getJSONArray("tool_calls");
+
+            if (toolCalls != null && !toolCalls.isEmpty()) {
+                // 有工具调用
+                log.info("[Stream-MCP] AI 决定调用 {} 个工具", toolCalls.size());
+                messages.add(message);
+
+                for (int i = 0; i < toolCalls.size(); i++) {
+                    JSONObject toolCall = toolCalls.getJSONObject(i);
+                    String toolCallId = toolCall.getString("id");
+                    JSONObject function = toolCall.getJSONObject("function");
+                    String functionName = function.getString("name");
+                    String argumentsStr = function.getString("arguments");
+
+                    log.info("[Stream-MCP] 调用工具: {} 参数: {}", functionName, argumentsStr);
+
+                    // 【关键】通知前端工具调用
+                    callback.onToolCall(functionName, argumentsStr);
+
+                    // 执行工具
+                    JSONObject arguments = JSON.parseObject(argumentsStr);
+                    JSONObject toolResult = mcpClient.callTool(functionName, arguments)
+                            .get(config.getTimeout(), TimeUnit.SECONDS);
+                    String toolOutput = extractToolContent(toolResult);
+
+                    log.info("[Stream-MCP] 工具返回: {}", toolOutput.length() > 200 ? toolOutput.substring(0, 200) + "..." : toolOutput);
+
+                    // 添加工具结果
+                    JSONObject toolMessage = new JSONObject();
+                    toolMessage.put("role", "tool");
+                    toolMessage.put("tool_call_id", toolCallId);
+                    toolMessage.put("content", toolOutput);
+                    messages.add(toolMessage);
+                }
+
+                // 递归处理下一轮
+                processStreamWithTools(messages, callback, iteration + 1);
+
+            } else {
+                // 没有工具调用，流式输出最终内容
+                String content = message.getString("content");
+                if (content != null && !content.isEmpty()) {
+                    // 模拟流式输出效果（按字符分块）
+                    streamOutContent(content, callback);
+                }
+                callback.onComplete(content != null ? content : "");
+            }
+        } catch (Exception e) {
+            log.error("[Stream-MCP] Error in iteration {}", iteration, e);
+            callback.onError(e.getMessage());
+        }
+    }
+
+    /**
+     * 将内容分块流式输出（模拟打字效果）
+     */
+    private void streamOutContent(String content, StreamCallback callback) {
+        // 按固定长度分块，模拟流式效果
+        int chunkSize = 3;  // 每次输出3个字符
+        for (int i = 0; i < content.length(); i += chunkSize) {
+            int end = Math.min(i + chunkSize, content.length());
+            String chunk = content.substring(i, end);
+            callback.onChunk(chunk);
+        }
     }
 
     /**

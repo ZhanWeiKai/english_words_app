@@ -136,7 +136,7 @@ Authorization: Bearer {{token}}
 Accept: text/event-stream
 
 {
-  "message": "你好",
+  "message": "今天日期是什么呀",
   "conversationId": null
 }
 
