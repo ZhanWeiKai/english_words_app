@@ -49,6 +49,7 @@ import kotlinx.coroutines.launch
 import com.englishword.audio.AudioRecorder
 import com.englishword.data.ASRService
 import com.englishword.data.RetrofitClient
+import com.englishword.data.TTSService
 import com.englishword.data.model.ChatMessage
 import com.englishword.data.model.Word
 import com.englishword.data.model.WordResult
@@ -421,7 +422,7 @@ fun TextInputArea(
                         color = if (isLoading) DisabledColor else TextColor,
                         fontSize = 16.sp
                     ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    cursorBrush = SolidColor(Color(0xFF2196F3)), // 蓝色光标，与深灰色文本区分
                     decorationBox = { innerTextField ->
                         if (inputText.isEmpty()) {
                             Text(
@@ -644,6 +645,14 @@ fun VoiceInputArea(
 @Composable
 fun ChatMessageItem(message: ChatMessage) {
     val isUser = message.role == "user"
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // TTS播放状态
+    var isPlaying by remember { mutableStateOf(false) }
+
+    // 保存content到局部变量避免智能转换问题
+    val messageContent = message.content
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -659,7 +668,7 @@ fun ChatMessageItem(message: ChatMessage) {
             // 使用 SelectionContainer 包裹 Text 以支持文本选择（长按全选/复制）
             SelectionContainer {
                 Text(
-                    text = message.content ?: "",
+                    text = messageContent ?: "",
                     modifier = Modifier.padding(12.dp),
                     color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
                 )
@@ -667,17 +676,48 @@ fun ChatMessageItem(message: ChatMessage) {
         }
 
         // TTS播放按钮（仅AI消息显示）
-        if (!isUser && !message.content.isNullOrBlank()) {
+        if (!isUser && !messageContent.isNullOrBlank()) {
             IconButton(
                 onClick = {
-                    // TODO: 调用TTS播放
+                    Log.d("tts_tag", "=== VolumeUp button clicked ===")
+                    if (isPlaying) {
+                        // 停止播放
+                        Log.d("tts_tag", "Stopping playback...")
+                        TTSService.stopPlaying()
+                        isPlaying = false
+                    } else {
+                        // 开始播放
+                        Log.d("tts_tag", "Starting playback...")
+                        isPlaying = true
+                        val textToSpeak = messageContent // 捕获到局部变量
+                        Log.d("tts_tag", "Text to speak: ${textToSpeak.take(50)}...")
+                        scope.launch {
+                            try {
+                                Log.d("tts_tag", "Getting apiService...")
+                                val apiService = RetrofitClient.getApiService()
+                                Log.d("tts_tag", "Calling TTSService.speak()...")
+                                TTSService.speak(
+                                    apiService,
+                                    textToSpeak,
+                                    onComplete = {
+                                        // 播放完成回调
+                                        Log.d("tts_tag", "Playback completed")
+                                        isPlaying = false
+                                    }
+                                )
+                            } catch (e: Exception) {
+                                Log.e("tts_tag", "ERROR in onClick: ${e.message}", e)
+                                isPlaying = false
+                            }
+                        }
+                    }
                 },
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.VolumeUp,
-                    contentDescription = "播放语音",
-                    tint = IconColor,
+                    contentDescription = if (isPlaying) "停止播放" else "播放语音",
+                    tint = if (isPlaying) MaterialTheme.colorScheme.primary else IconColor,
                     modifier = Modifier.size(18.dp)
                 )
             }

@@ -96,4 +96,11 @@ interface ApiService {
         @Part file: MultipartBody.Part,
         @Part("language") language: String?
     ): ASRResponse
+
+    // ==================== TTS APIs ====================
+
+    @POST("tts/synthesize")
+    suspend fun synthesizeSpeech(
+        @Query("text") text: String
+    ): TTSResponse
 }

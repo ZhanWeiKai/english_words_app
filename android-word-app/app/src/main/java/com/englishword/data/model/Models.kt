@@ -215,3 +215,11 @@ data class ASRResponse(
     val language: String? = null,
     val text: String? = null
 )
+
+/**
+ * TTS (Text-to-Speech) Response
+ */
+data class TTSResponse(
+    val audioUrl: String? = null,
+    val text: String? = null
+)
