@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
 
 import java.util.*;
 
@@ -136,6 +138,143 @@ public class AIConversationService {
         } catch (Exception e) {
             log.error("AI聊天处理失败", e);
             return ApiResponse.error(500, "AI聊天处理失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 流式聊天 - 返回 Flux 用于 SSE
+     *
+     * @param userId  用户ID
+     * @param request 聊天请求
+     * @return SSE 事件流
+     */
+    public Flux<String> chatStream(String userId, AIChatRequest request) {
+        return Flux.create(emitter -> {
+            try {
+                // 1. 获取或创建对话
+                String conversationId = request.getConversationId();
+                AIConversation conversation;
+                String conversationHistory;
+
+                if (conversationId != null && !conversationId.isEmpty()) {
+                    Optional<AIConversation> convOptional = conversationRepository.findById(conversationId);
+                    if (convOptional.isEmpty()) {
+                        emitter.error(new RuntimeException("对话不存在"));
+                        return;
+                    }
+                    conversation = convOptional.get();
+                    if (!conversation.getUserId().equals(userId)) {
+                        emitter.error(new RuntimeException("无权访问此对话"));
+                        return;
+                    }
+                    conversationHistory = conversation.getMessages();
+                } else {
+                    conversation = new AIConversation();
+                    conversation.setUserId(userId);
+                    conversation.setContextWordId(request.getTargetWord());
+                    conversation.setMessages("[]");
+                    conversation = conversationRepository.save(conversation);
+                    conversationId = conversation.getConversationId();
+                    conversationHistory = "[]";
+                }
+
+                // 2. 设置用户上下文
+                UserContext.setCurrentOperationUser(userId, null);
+
+                // 3. 先发送 conversationId 给客户端（使用特殊前缀标识）
+                emitter.next("__CONVERSATION_ID__:" + conversationId);
+
+                // 4. 收集完整响应用于保存
+                StringBuilder fullResponse = new StringBuilder();
+                String finalConversationId = conversationId;
+                String finalConversationHistory = conversationHistory;
+                AIConversation finalConversation = conversation;
+
+                // 5. 调用流式 API
+                String systemPrompt = getSystemPrompt(request.getMode(), request.getTrainingWords());
+
+                chatClient.chatStream(
+                        systemPrompt,
+                        request.getMessage(),
+                        finalConversationHistory,
+                        new ChatClient.StreamCallback() {
+                            @Override
+                            public void onChunk(String chunk) {
+                                fullResponse.append(chunk);
+                                // 发送 SSE 格式的数据
+                                emitter.next(chunk);
+                            }
+
+                            @Override
+                            public void onComplete(String response) {
+                                try {
+                                    // 6. 保存对话历史
+                                    saveConversationHistory(finalConversation, request.getMessage(), response);
+
+                                    // 7. 发送完成标记
+                                    emitter.next("[DONE]");
+                                    emitter.complete();
+                                } finally {
+                                    UserContext.clearOperationUser();
+                                }
+                            }
+
+                            @Override
+                            public void onError(String error) {
+                                UserContext.clearOperationUser();
+                                emitter.error(new RuntimeException(error));
+                            }
+                        }
+                );
+
+            } catch (Exception e) {
+                log.error("Stream chat error", e);
+                UserContext.clearOperationUser();
+                emitter.error(e);
+            }
+        }, FluxSink.OverflowStrategy.BUFFER);
+    }
+
+    /**
+     * 根据模式获取系统提示词
+     */
+    private String getSystemPrompt(String mode, List<String> trainingWords) {
+        if ("word_training".equals(mode) && trainingWords != null && !trainingWords.isEmpty()) {
+            String wordsListStr = String.join(" / ", trainingWords);
+            return String.format(SCENARIO_TRAINING_PROMPT_TEMPLATE, wordsListStr);
+        }
+        return null;  // 使用默认提示词
+    }
+
+    private static final String SCENARIO_TRAINING_PROMPT_TEMPLATE = """
+        你是一位专业的雅思口语考官，正在帮助用户练习使用目标单词。
+
+        ## 本轮训练考词
+        %s
+
+        请用这些单词与用户进行对话练习。
+        """;
+
+    /**
+     * 保存对话历史
+     */
+    private void saveConversationHistory(AIConversation conversation, String userMessage, String aiReply) {
+        try {
+            String conversationHistory = conversation.getMessages();
+            List<Map<String, String>> messages = parseMessages(conversationHistory);
+            messages.add(Map.of("role", "user", "content", userMessage));
+            messages.add(Map.of("role", "assistant", "content", aiReply));
+
+            // 限制历史记录长度（最近20轮）
+            if (messages.size() > 20) {
+                messages = messages.subList(messages.size() - 20, messages.size());
+            }
+
+            conversation.setMessages(objectMapper.writeValueAsString(messages));
+            conversationRepository.save(conversation);
+            log.info("Saved conversation history for conversationId={}", conversation.getConversationId());
+        } catch (Exception e) {
+            log.error("Failed to save conversation history", e);
         }
     }
 

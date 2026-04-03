@@ -8,8 +8,6 @@ Content-Type: application/json
 }
 
 > {%
-    // 从返回 JSON 中提取 token
-    const json = JSON.parse(response.body);
     client.global.set("token", response.body.data.token);
 %}
 
@@ -19,7 +17,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "message": "帮我添加family",
+  "message": "test test",
   "conversationId": null
 }
 
@@ -53,3 +51,19 @@ Content-Disposition: form-data; name="file"; filename="hello_world_female2.wav"
 Content-Type: audio/wav
 
 < ./abc.wav
+
+###
+POST http://119.91.206.195:8885/api/tts/synthesize?text=Hello! 👋 How can I help you with your Englis
+Authorization: Bearer {{token}}
+
+
+###
+POST http://119.91.206.195:8885/api/ai/chat/stream
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+
+{
+  "message": "你好",
+  "conversationId": null
+}

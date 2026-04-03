@@ -113,6 +113,17 @@
             <artifactId>okhttp</artifactId>
             <version>4.12.0</version>
         </dependency>
+        <!-- OkHttp SSE for streaming -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp-sse</artifactId>
+            <version>4.12.0</version>
+        </dependency>
+        <!-- Spring WebFlux for reactive streaming -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
 
         <!-- Apache Commons Lang3 -->
         <dependency>

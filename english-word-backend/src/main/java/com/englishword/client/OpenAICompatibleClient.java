@@ -6,13 +6,22 @@ import com.alibaba.fastjson2.JSONObject;
 import com.englishword.config.ChatProperties;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import okhttp3.sse.EventSource;
+import okhttp3.sse.EventSourceListener;
+import okhttp3.sse.EventSources;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,6 +45,7 @@ public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
 
     private final OkHttpClient httpClient;
     private final ChatProperties config;
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
 
     // MCP 相关
     private final McpClient mcpClient;
@@ -307,6 +317,129 @@ public class OpenAICompatibleClient implements ChatClient, ApplicationRunner {
             log.error("AI API call exception", e);
             return "抱歉，AI服务出现错误：" + e.getMessage();
         }
+    }
+
+    // ==================== 流式调用方法 ====================
+
+    /**
+     * 流式调用 AI API（支持 MCP 工具调用）
+     */
+    public void chatStream(String systemPrompt, String userMessage,
+                           String conversationHistory, StreamCallback callback) {
+        try {
+            // 目前流式模式不支持工具调用，直接使用简单流式
+            chatStreamSimple(systemPrompt, userMessage, conversationHistory, callback);
+        } catch (Exception e) {
+            log.error("AI API stream call exception", e);
+            callback.onError("AI服务出现错误：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 简单流式调用（无工具）
+     * 直接使用原始响应流处理 SSE，避免 OkHttp EventSource 的兼容性问题
+     */
+    private void chatStreamSimple(String systemPrompt, String userMessage,
+                                   String conversationHistory, StreamCallback callback) {
+        // 在新线程中执行，避免阻塞
+        executorService.submit(() -> {
+            try {
+                JSONObject requestBody = buildRequestBody(systemPrompt, userMessage, conversationHistory, null);
+                requestBody.put("stream", true);  // 开启流式
+
+                Request request = new Request.Builder()
+                        .url(config.getApiUrl())
+                        .addHeader("Authorization", "Bearer " + config.getApiKey())
+                        .addHeader("Content-Type", "application/json")
+                        .addHeader("Accept", "text/event-stream")
+                        .addHeader("Cache-Control", "no-cache")
+                        .post(RequestBody.create(
+                                requestBody.toJSONString(),
+                                MediaType.parse("application/json; charset=utf-8")
+                        ))
+                        .build();
+
+                StringBuilder fullResponse = new StringBuilder();
+
+                try (Response response = httpClient.newCall(request).execute()) {
+                    if (!response.isSuccessful()) {
+                        String errorBody = response.body() != null ? response.body().string() : "No error body";
+                        log.error("SSE request failed: HTTP {} - {}", response.code(), errorBody);
+                        callback.onError("HTTP " + response.code() + ": " + errorBody);
+                        return;
+                    }
+
+                    if (response.body() == null) {
+                        callback.onError("Empty response body");
+                        return;
+                    }
+
+                    // 直接读取响应流，手动解析 SSE 格式
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(response.body().byteStream(), StandardCharsets.UTF_8))) {
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            log.debug("[SSE] Raw line: {}", line);
+
+                            if (line.isEmpty()) {
+                                continue;  // 跳过空行
+                            }
+
+                            if (line.startsWith("data:")) {
+                                String data = line.substring(5).trim();
+
+                                if ("[DONE]".equals(data)) {
+                                    log.info("[SSE] Stream completed, total length: {}", fullResponse.length());
+                                    callback.onComplete(fullResponse.toString());
+                                    return;
+                                }
+
+                                String chunk = parseStreamChunk(data);
+                                if (chunk != null && !chunk.isEmpty()) {
+                                    fullResponse.append(chunk);
+                                    callback.onChunk(chunk);
+                                }
+                            }
+                        }
+
+                        // 如果流正常结束但没有收到 [DONE]
+                        if (fullResponse.length() > 0) {
+                            log.info("[SSE] Stream ended without [DONE], total length: {}", fullResponse.length());
+                            callback.onComplete(fullResponse.toString());
+                        }
+                    }
+                }
+
+            } catch (Exception e) {
+                log.error("Failed to process SSE stream", e);
+                callback.onError(e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 解析流式响应块
+     * 智谱 AI 格式: {"choices":[{"delta":{"content":"xxx"}}]}
+     */
+    private String parseStreamChunk(String data) {
+        try {
+            JSONObject json = JSON.parseObject(data);
+            JSONArray choices = json.getJSONArray("choices");
+            if (choices != null && !choices.isEmpty()) {
+                JSONObject firstChoice = choices.getJSONObject(0);
+                JSONObject delta = firstChoice.getJSONObject("delta");
+                if (delta != null && delta.containsKey("content")) {
+                    String content = delta.getString("content");
+                    if (content != null && !content.isEmpty()) {
+                        return content;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to parse stream chunk, raw data: {}", data);
+        }
+        return null;
     }
 
     /**

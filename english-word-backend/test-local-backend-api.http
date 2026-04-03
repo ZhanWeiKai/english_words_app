@@ -117,3 +117,48 @@ Authorization: Bearer {{token}}
 ### TTS - 指定音色
 POST http://localhost:8885/api/tts/synthesize?text=Good%20morning!&voice=longanyang
 Authorization: Bearer {{token}}
+
+### =============================================
+### AI 聊天流式输出测试 (SSE)
+### =============================================
+### 注意：SSE 流式请求在 IntelliJ HTTP Client 中可能无法直接看到流式效果
+### 建议使用 curl 测试：
+### curl -N -X POST "http://localhost:8885/api/ai/chat/stream" \
+###   -H "Authorization: Bearer <token>" \
+###   -H "Content-Type: application/json" \
+###   -H "Accept: text/event-stream" \
+###   -d '{"message":"你好，请简单介绍一下自己","conversationId":null}'
+
+### AI聊天流式 - 创建新对话
+POST http://localhost:8885/api/ai/chat/stream
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+
+{
+  "message": "你好",
+  "conversationId": null
+}
+
+### AI聊天流式 - 继续对话
+POST http://localhost:8885/api/ai/chat/stream
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+
+{
+  "message": "你有哪些功能？",
+  "conversationId": "{{conversationId}}"
+}
+
+### AI聊天流式 - 训练模式
+POST http://localhost:8885/api/ai/chat/stream
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: text/event-stream
+
+{
+  "message": "Let's start!",
+  "mode": "word_training",
+  "trainingWords": ["ubiquitous", "allocate", "implement"]
+}

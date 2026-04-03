@@ -10,6 +10,26 @@ import java.util.List;
 public interface ChatClient {
 
     /**
+     * 流式回调接口
+     */
+    interface StreamCallback {
+        /**
+         * 收到一个文本块
+         */
+        void onChunk(String chunk);
+
+        /**
+         * 流式完成，返回完整响应
+         */
+        void onComplete(String fullResponse);
+
+        /**
+         * 发生错误
+         */
+        void onError(String error);
+    }
+
+    /**
      * 通用对话
      *
      * @param systemPrompt 系统提示词
@@ -18,6 +38,16 @@ public interface ChatClient {
      * @return AI 回复
      */
     String chat(String systemPrompt, String userMessage, String conversationHistory);
+
+    /**
+     * 通用对话（流式输出）
+     *
+     * @param systemPrompt 系统提示词
+     * @param userMessage 用户消息
+     * @param conversationHistory 对话历史（JSON 数组字符串，可为 null）
+     * @param callback 流式回调
+     */
+    void chatStream(String systemPrompt, String userMessage, String conversationHistory, StreamCallback callback);
 
     /**
      * 单词讲解
