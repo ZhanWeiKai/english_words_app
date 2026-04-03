@@ -2,7 +2,10 @@ package com.englishword.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.englishword.BuildConfig
 import com.englishword.data.RetrofitClient
+import com.englishword.data.SSEClient
+import com.englishword.data.SSEEvent
 import com.englishword.data.model.AIChatRequest
 import com.englishword.data.model.AIChatResponse
 import com.englishword.data.model.ChatMessage
@@ -13,8 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 
 class AIChatViewModel : ViewModel() {
+
+    companion object {
+        private const val TAG = "AIChatViewModel"
+    }
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
@@ -41,16 +50,16 @@ class AIChatViewModel : ViewModel() {
 
     private val apiService by lazy { RetrofitClient.getApiService() }
 
+    // SSE client for streaming
+    private val sseClient by lazy { SSEClient(BuildConfig.BASE_URL) }
+
     /**
      * Initialize with training words (training mode)
-     * This sends "Let's start!" to trigger the first question from AI
      */
     fun initTrainingMode(selectedWords: List<Word>) {
         if (selectedWords.isNotEmpty() && _messages.value.isEmpty()) {
-            // Store training words
             trainingWordsList = selectedWords.mapNotNull { it.word }
 
-            // Show training words banner
             val wordsList = trainingWordsList.joinToString(" / ")
             val bannerMsg = ChatMessage().apply {
                 role = "assistant"
@@ -58,7 +67,6 @@ class AIChatViewModel : ViewModel() {
             }
             _messages.value = listOf(bannerMsg)
 
-            // Send "Let's start!" to get first question from AI
             startTraining()
         }
     }
@@ -84,7 +92,6 @@ class AIChatViewModel : ViewModel() {
                     val chatResponse = response.data!!
                     _conversationId.value = chatResponse.conversationId
 
-                    // Add AI's first question
                     val aiMsg = ChatMessage().apply {
                         role = "assistant"
                         content = chatResponse.message
@@ -103,7 +110,7 @@ class AIChatViewModel : ViewModel() {
     }
 
     /**
-     * Send message to AI
+     * Send message to AI (streaming output)
      */
     fun sendMessage(
         message: String,
@@ -113,65 +120,116 @@ class AIChatViewModel : ViewModel() {
         if (message.isBlank()) return
 
         viewModelScope.launch {
-            _isLoading.value = true
             _error.value = null
 
-            // Add user message immediately
+            // 1. Add user message immediately
             val userMsg = ChatMessage().apply {
                 role = "user"
                 content = message
             }
             _messages.value = _messages.value + userMsg
+            _isLoading.value = true
 
             try {
-                val request = AIChatRequest().apply {
-                    this.message = message
-                    this.conversationId = _conversationId.value
-                    this.mode = mode
-                    this.targetWord = targetWord
-                    // Include training words for training mode
-                    if (mode == "word_training") {
-                        this.trainingWords = trainingWordsList
-                    }
+                val token = RetrofitClient.getStoredToken()
+                if (token.isNullOrBlank()) {
+                    _error.value = "Not authenticated"
+                    addAIMessage("Please login first.")
+                    _isLoading.value = false
+                    return@launch
                 }
 
-                val response = apiService.chat(request)
+                val requestBody = buildStreamRequestBody(message, mode, targetWord)
+                val fullResponse = StringBuilder()
+                var aiMsgAdded = false
 
-                if (response.isSuccess && response.data != null) {
-                    val chatResponse = response.data!!
-
-                    // Update conversation ID
-                    _conversationId.value = chatResponse.conversationId
-
-                    // Add AI response
-                    val aiMsg = ChatMessage().apply {
-                        role = "assistant"
-                        content = chatResponse.message
-                        conversationId = chatResponse.conversationId
-                        wordResults = chatResponse.wordResults  // Pass word results
+                // 2. Collect streaming data
+                sseClient.chatStream("ai/chat/stream", token, requestBody)
+                    .collect { event ->
+                        when (event) {
+                            is SSEEvent.ConversationId -> {
+                                _conversationId.value = event.id
+                                Log.d(TAG, "Received conversationId: ${event.id}")
+                            }
+                            is SSEEvent.Message -> {
+                                // 第一次收到消息时添加AI消息占位符
+                                if (!aiMsgAdded) {
+                                    addEmptyAIMessage()
+                                    aiMsgAdded = true
+                                }
+                                // 追加消息内容
+                                fullResponse.append(event.content)
+                                updateLastAIMessage(fullResponse.toString())
+                            }
+                            is SSEEvent.Done -> {
+                                Log.d(TAG, "Stream completed")
+                            }
+                        }
                     }
-                    _messages.value = _messages.value + aiMsg
-                } else {
-                    _error.value = response.message ?: "Failed to get AI response"
-                    // Add error message as AI response
-                    val errorMsg = ChatMessage().apply {
-                        role = "assistant"
-                        content = "Sorry, I encountered an error. Please try again."
-                    }
-                    _messages.value = _messages.value + errorMsg
-                }
+
             } catch (e: Exception) {
+                Log.e(TAG, "Stream error: ${e.message}", e)
                 _error.value = e.message ?: "Network error"
-                // Add error message as AI response
-                val errorMsg = ChatMessage().apply {
-                    role = "assistant"
-                    content = "Sorry, network error occurred. Please check your connection."
-                }
-                _messages.value = _messages.value + errorMsg
+                addAIMessage("Sorry, network error occurred.")
             } finally {
                 _isLoading.value = false
             }
         }
+    }
+
+    /**
+     * Add empty AI message placeholder (for streaming)
+     */
+    private fun addEmptyAIMessage() {
+        val aiMsg = ChatMessage().apply {
+            role = "assistant"
+            content = ""
+            conversationId = _conversationId.value
+        }
+        _messages.value = _messages.value + aiMsg
+    }
+
+    /**
+     * Update the last AI message content
+     */
+    private fun updateLastAIMessage(content: String) {
+        val currentList = _messages.value.toMutableList()
+        val lastIndex = currentList.lastIndex
+        if (lastIndex >= 0 && currentList[lastIndex].role == "assistant") {
+            currentList[lastIndex] = ChatMessage().apply {
+                role = "assistant"
+                this.content = content
+                conversationId = _conversationId.value
+            }
+            _messages.value = currentList
+        }
+    }
+
+    /**
+     * Add a complete AI message (for errors)
+     */
+    private fun addAIMessage(content: String) {
+        val aiMsg = ChatMessage().apply {
+            role = "assistant"
+            this.content = content
+            conversationId = _conversationId.value
+        }
+        _messages.value = _messages.value + aiMsg
+    }
+
+    /**
+     * Build JSON request body for streaming
+     */
+    private fun buildStreamRequestBody(message: String, mode: String, targetWord: String?): String {
+        val json = JSONObject()
+        json.put("message", message)
+        json.put("mode", mode)
+        _conversationId.value?.let { json.put("conversationId", it) }
+        targetWord?.let { json.put("targetWord", it) }
+        if (mode == "word_training") {
+            json.put("trainingWords", JSONArray(trainingWordsList))
+        }
+        return json.toString()
     }
 
     /**
@@ -181,15 +239,12 @@ class AIChatViewModel : ViewModel() {
         Log.d("AIChatViewModel", "=== addWord called === wordResult: $wordResult")
         val wordText = wordResult.word ?: return
 
-        // Prevent duplicate adds
         if (_addedWords.value.contains(wordText) || _addingWords.value.contains(wordText)) {
             Log.d("AIChatViewModel", "=== Word already added or adding: $wordText ===")
             return
         }
 
         viewModelScope.launch {
-            Log.d("AIChatViewModel", "=== Starting addWord coroutine ===")
-            // Mark as adding
             _addingWords.value = _addingWords.value + wordText
 
             try {
@@ -201,25 +256,18 @@ class AIChatViewModel : ViewModel() {
                     this.translation = wordResult.meaning
                     this.status = "LEARNING"
                 }
-                Log.d("AIChatViewModel", "=== Word object created: word=${word.word}, phonetic=${word.phonetic}, translation=${word.translation}")
 
                 val response = apiService.addWord(word).execute()
-                Log.d("AIChatViewModel", "=== API response: isSuccessful=${response.isSuccessful}, code=${response.code()}")
 
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
-                    // Mark as added
                     _addedWords.value = _addedWords.value + wordText
                     Log.d("AIChatViewModel", "=== Word added successfully: $wordText ===")
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("AIChatViewModel", "=== Add word failed: code=${response.code()}, error=$errorBody, body=${response.body()} ===")
                     _error.value = "添加失败"
                 }
             } catch (e: Exception) {
-                Log.e("AIChatViewModel", "=== Add word exception: ${e.message}", e)
                 _error.value = e.message ?: "网络错误"
             } finally {
-                // Remove from adding set
                 _addingWords.value = _addingWords.value - wordText
             }
         }
@@ -251,10 +299,9 @@ class AIChatViewModel : ViewModel() {
                     val conversation = response.data!!
                     _conversationId.value = conversation.conversationId
 
-                    // Parse messages JSON
                     val messagesJson = conversation.messages
                     if (!messagesJson.isNullOrBlank()) {
-                        val jsonArray = org.json.JSONArray(messagesJson)
+                        val jsonArray = JSONArray(messagesJson)
                         val loadedMessages = mutableListOf<ChatMessage>()
                         for (i in 0 until jsonArray.length()) {
                             val obj = jsonArray.getJSONObject(i)
@@ -270,7 +317,6 @@ class AIChatViewModel : ViewModel() {
                     _error.value = response.message ?: "加载对话失败"
                 }
             } catch (e: Exception) {
-                Log.e("AIChatViewModel", "Failed to load conversation", e)
                 _error.value = "加载失败: ${e.message}"
             } finally {
                 _isLoading.value = false

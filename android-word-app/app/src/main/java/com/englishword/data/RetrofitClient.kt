@@ -14,6 +14,9 @@ object RetrofitClient {
 
     private const val TAG = "english_words"
 
+    // Expose BASE_URL for SSE client
+    val BASE_URL: String = BuildConfig.BASE_URL
+
     private var apiService: ApiService? = null
     private var tokenManager: TokenManager? = null
 
@@ -62,5 +65,12 @@ object RetrofitClient {
     fun getApiService(): ApiService {
         Log.d(TAG, "getApiService() called, initialized: ${apiService != null}")
         return apiService ?: throw IllegalStateException("RetrofitClient not initialized. Call init() first.")
+    }
+
+    /**
+     * Get stored token for SSE connections
+     */
+    suspend fun getStoredToken(): String? {
+        return tokenManager?.getToken()?.first()
     }
 }

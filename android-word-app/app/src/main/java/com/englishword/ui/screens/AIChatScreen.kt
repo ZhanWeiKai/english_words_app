@@ -23,6 +23,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -234,8 +240,13 @@ fun AIChatScreen(
                     }
                 }
 
-                // Show loading indicator when waiting for AI response
-                if (isLoading) {
+                // Show loading indicator when:
+                // 1. isLoading = true
+                // 2. Last message is from user (waiting for AI response)
+                // 或者最后一条AI消息内容为空
+                val lastMsg = messages.lastOrNull()
+                val showLoading = isLoading && (lastMsg?.role == "user" || lastMsg?.content.isNullOrBlank())
+                if (showLoading) {
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -675,11 +686,20 @@ fun ChatMessageItem(message: ChatMessage) {
             )
             CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
                 SelectionContainer {
-                    Text(
-                        text = messageContent ?: "",
-                        modifier = Modifier.padding(12.dp),
-                        color = if (isUser) Color.White else MaterialTheme.colorScheme.onSurface
-                    )
+                    if (isUser) {
+                        // 用户消息：普通文本
+                        Text(
+                            text = messageContent ?: "",
+                            modifier = Modifier.padding(12.dp),
+                            color = Color.White
+                        )
+                    } else {
+                        // AI消息：格式化英文内容
+                        Text(
+                            text = formatAIContent(messageContent ?: ""),
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
                 }
             }
         }
@@ -783,5 +803,41 @@ private suspend fun recognizeSpeech(context: Context, audioFilePath: String): St
     } catch (e: Exception) {
         Log.e("AIChatScreen", "ASR call failed", e)
         null
+    }
+}
+
+/**
+ * Format AI content with proper spacing
+ * - Add spacing between Chinese and English
+ * - Use normal black font color
+ */
+private fun formatAIContent(content: String): AnnotatedString {
+    return buildAnnotatedString {
+        val sb = StringBuilder()
+        for (i in content.indices) {
+            val char = content[i]
+            val isChinese = char.code in 0x4E00..0x9FFF
+            val isEnglish = char.code in 0x41..0x5A || char.code in 0x61..0x7A
+
+            // 检查前一个字符
+            if (i > 0 && isChinese) {
+                val prevChar = content[i - 1]
+                val prevIsEnglish = prevChar.code in 0x41..0x5A || prevChar.code in 0x61..0x7A
+                if (prevIsEnglish) {
+                    sb.append(' ') // 英文后跟中文，加空格
+                }
+            }
+
+            if (i > 0 && isEnglish) {
+                val prevChar = content[i - 1]
+                val prevIsChinese = prevChar.code in 0x4E00..0x9FFF
+                if (prevIsChinese) {
+                    sb.append(' ') // 中文后跟英文，加空格
+                }
+            }
+
+            sb.append(char)
+        }
+        append(sb.toString())
     }
 }
