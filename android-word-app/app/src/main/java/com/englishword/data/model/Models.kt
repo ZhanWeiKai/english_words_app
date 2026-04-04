@@ -223,3 +223,61 @@ data class TTSResponse(
     val audioUrl: String? = null,
     val text: String? = null
 )
+
+/**
+ * Marked word in a sentence
+ */
+data class MarkedWord(
+    val word: String? = null,
+    val wordId: String? = null
+)
+
+/**
+ * Sentence entity - matches backend response
+ * markedWords is stored as JSON string in backend
+ */
+data class Sentence(
+    val id: String? = null,
+    val userId: String? = null,
+    val englishText: String? = null,
+    val chineseText: String? = null,
+    val markedWords: String? = null,  // JSON string from backend, parse manually
+    val sourceConversationId: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null
+) {
+    // Helper to parse markedWords JSON string
+    fun parseMarkedWords(): List<MarkedWord> {
+        if (markedWords.isNullOrBlank()) return emptyList()
+        return try {
+            val gson = com.google.gson.Gson()
+            gson.fromJson(markedWords, Array<MarkedWord>::class.java).toList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+}
+
+/**
+ * Sentence list response - data is directly an array of sentences
+ */
+data class SentenceListResponse(
+    val code: Int = 0,
+    val message: String? = null,
+    val data: List<Sentence>? = null
+) {
+    val success: Boolean
+        get() = code == 200
+}
+
+/**
+ * Sentence delete response
+ */
+data class SentenceDeleteResponse(
+    val code: Int = 0,
+    val message: String? = null,
+    val data: String? = null
+) {
+    val isSuccess: Boolean
+        get() = code == 200
+}

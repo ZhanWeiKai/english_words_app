@@ -103,4 +103,18 @@ interface ApiService {
     suspend fun synthesizeSpeech(
         @Query("text") text: String
     ): TTSResponse
+
+    // ==================== Sentence APIs ====================
+
+    @GET("sentences")
+    suspend fun getSentences(
+        @Query("keyword") keyword: String? = null,
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 20
+    ): SentenceListResponse
+
+    @DELETE("sentences/{sentenceId}")
+    suspend fun deleteSentence(
+        @Path("sentenceId") sentenceId: String
+    ): SentenceDeleteResponse
 }

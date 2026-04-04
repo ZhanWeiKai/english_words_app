@@ -18,17 +18,25 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.englishword.data.model.Word
 import com.englishword.ui.theme.*
+import com.englishword.ui.screens.sentence.SentenceListScreen
 
 private const val TAG = "english_words"
+
+enum class VaultTab {
+    WORDS,
+    SENTENCES
+}
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -47,6 +55,9 @@ fun WordVaultScreen(
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedFilter by remember { mutableStateOf("All") }
+
+    // Tab state
+    var selectedTab by remember { mutableStateOf(VaultTab.WORDS) }
 
     // Multi-select state
     var isMultiSelectMode by remember { mutableStateOf(false) }
@@ -91,8 +102,12 @@ fun WordVaultScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(if (isMultiSelectMode) "已选择 ${selectedWords.size} 个单词"
-                         else "Word Vault")
+                    Text(
+                        text = if (isMultiSelectMode) "已选择 ${selectedWords.size} 个单词"
+                               else "Welcome, $username!",
+                        maxLines = 1,
+                        fontSize = 14.sp
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = if (isMultiSelectMode) MaterialTheme.colorScheme.primary
@@ -110,7 +125,11 @@ fun WordVaultScreen(
                         }
                     } else {
                         // Refresh button
-                        IconButton(onClick = { viewModel.loadWords() }) {
+                        IconButton(onClick = {
+                            if (selectedTab == VaultTab.WORDS) {
+                                viewModel.loadWords()
+                            }
+                        }) {
                             Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.White)
                         }
                         TextButton(onClick = onLogout) {
@@ -121,27 +140,29 @@ fun WordVaultScreen(
             )
         },
         floatingActionButton = {
-            if (isMultiSelectMode && selectedWords.isNotEmpty()) {
-                // Start Training FAB
-                FloatingActionButton(
-                    onClick = {
-                        onStartTraining(selectedWords.toList())
-                        isMultiSelectMode = false
-                        selectedWords = emptySet()
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Start Training")
-                }
-            } else if (!isMultiSelectMode) {
-                // AI Assistant FAB (black)
-                FloatingActionButton(
-                    onClick = onAIAssistant,
-                    containerColor = Color.Black,
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "AI Assistant")
+            if (selectedTab == VaultTab.WORDS) {
+                if (isMultiSelectMode && selectedWords.isNotEmpty()) {
+                    // Start Training FAB
+                    FloatingActionButton(
+                        onClick = {
+                            onStartTraining(selectedWords.toList())
+                            isMultiSelectMode = false
+                            selectedWords = emptySet()
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Start Training")
+                    }
+                } else if (!isMultiSelectMode) {
+                    // AI Assistant FAB (black)
+                    FloatingActionButton(
+                        onClick = onAIAssistant,
+                        containerColor = Color.Black,
+                        contentColor = Color.White
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "AI Assistant")
+                    }
                 }
             }
         }
@@ -150,141 +171,224 @@ fun WordVaultScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
         ) {
-            // Welcome message (only show when not in multi-select mode)
+            // Tab Row (only show when not in multi-select mode)
             if (!isMultiSelectMode) {
-                Text(
-                    text = "Welcome, $username!",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Search bar
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = {
-                        searchQuery = it
-                        // Debounced search - search when text changes
-                        if (it.isNotEmpty()) {
-                            viewModel.searchWords(it)
-                        } else {
-                            viewModel.loadWords()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Search words...") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = {
-                                searchQuery = ""
-                                viewModel.loadWords()
-                            }) {
-                                Icon(Icons.Default.Close, contentDescription = "Clear")
-                            }
-                        }
-                    },
-                    singleLine = true
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Filter chips
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    FilterChip(
-                        selected = selectedFilter == "All",
-                        onClick = {
-                            selectedFilter = "All"
-                            viewModel.filterByStatus(null)
-                        },
-                        label = { Text("All") }
-                    )
-                    FilterChip(
-                        selected = selectedFilter == "Learning",
-                        onClick = {
-                            selectedFilter = "Learning"
-                            viewModel.filterByStatus("LEARNING")
-                        },
-                        label = { Text("Learning") }
-                    )
-                    FilterChip(
-                        selected = selectedFilter == "Mastered",
-                        onClick = {
-                            selectedFilter = "Mastered"
-                            viewModel.filterByStatus("MASTERED")
-                        },
-                        label = { Text("Mastered") }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Hint for multi-select
-            if (!isMultiSelectMode) {
-                Text(
-                    text = "长按单词进入多选模式",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            // Word list
-            if (isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else if (words.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No words yet. Add your first word!",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-            } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(words) { word ->
-                        WordCard(
-                            word = word,
-                            isSelected = selectedWords.contains(word),
-                            isMultiSelectMode = isMultiSelectMode,
-                            onLongClick = {
-                                if (!isMultiSelectMode) {
-                                    isMultiSelectMode = true
-                                    selectedWords = setOf(word)
-                                }
-                            },
-                            onClick = {
-                                if (isMultiSelectMode) {
-                                    selectedWords = if (selectedWords.contains(word)) {
-                                        selectedWords - word
-                                    } else {
-                                        selectedWords + word
-                                    }
-                                    // Exit multi-select mode if no words selected
-                                    if (selectedWords.isEmpty()) {
-                                        isMultiSelectMode = false
-                                    }
-                                }
-                            }
+                TabRow(
+                    selectedTabIndex = selectedTab.ordinal,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                    indicator = { tabPositions ->
+                        Box(
+                            Modifier
+                                .tabIndicatorOffset(tabPositions[selectedTab.ordinal])
+                                .height(3.dp)
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.primary)
                         )
                     }
+                ) {
+                    Tab(
+                        selected = selectedTab == VaultTab.WORDS,
+                        onClick = { selectedTab = VaultTab.WORDS },
+                        text = {
+                            Text(
+                                "Words",
+                                color = if (selectedTab == VaultTab.WORDS) MaterialTheme.colorScheme.primary
+                                        else Color(0xFF6B7280)
+                            )
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    Tab(
+                        selected = selectedTab == VaultTab.SENTENCES,
+                        onClick = { selectedTab = VaultTab.SENTENCES },
+                        text = {
+                            Text(
+                                "Sentences",
+                                color = if (selectedTab == VaultTab.SENTENCES) MaterialTheme.colorScheme.primary
+                                        else Color(0xFF6B7280)
+                            )
+                        },
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+            }
+
+            // Tab Content
+            when (selectedTab) {
+                VaultTab.WORDS -> {
+                    WordListContent(
+                        viewModel = viewModel,
+                        words = words,
+                        isLoading = isLoading,
+                        searchQuery = searchQuery,
+                        onSearchQueryChange = { searchQuery = it },
+                        selectedFilter = selectedFilter,
+                        onFilterChange = { selectedFilter = it },
+                        isMultiSelectMode = isMultiSelectMode,
+                        selectedWords = selectedWords,
+                        onMultiSelectModeChange = { isMultiSelectMode = it },
+                        onSelectedWordsChange = { selectedWords = it }
+                    )
+                }
+                VaultTab.SENTENCES -> {
+                    SentenceListScreen()
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun WordListContent(
+    viewModel: WordVaultViewModel,
+    words: List<Word>,
+    isLoading: Boolean,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    selectedFilter: String,
+    onFilterChange: (String) -> Unit,
+    isMultiSelectMode: Boolean,
+    selectedWords: Set<Word>,
+    onMultiSelectModeChange: (Boolean) -> Unit,
+    onSelectedWordsChange: (Set<Word>) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        if (!isMultiSelectMode) {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Search bar
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    onSearchQueryChange(it)
+                    // Debounced search - search when text changes
+                    if (it.isNotEmpty()) {
+                        viewModel.searchWords(it)
+                    } else {
+                        viewModel.loadWords()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("Search words...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = {
+                            onSearchQueryChange("")
+                            viewModel.loadWords()
+                        }) {
+                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                        }
+                    }
+                },
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Filter chips
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                FilterChip(
+                    selected = selectedFilter == "All",
+                    onClick = {
+                        onFilterChange("All")
+                        viewModel.filterByStatus(null)
+                    },
+                    label = { Text("All") }
+                )
+                FilterChip(
+                    selected = selectedFilter == "Learning",
+                    onClick = {
+                        onFilterChange("Learning")
+                        viewModel.filterByStatus("LEARNING")
+                    },
+                    label = { Text("Learning") }
+                )
+                FilterChip(
+                    selected = selectedFilter == "Mastered",
+                    onClick = {
+                        onFilterChange("Mastered")
+                        viewModel.filterByStatus("MASTERED")
+                    },
+                    label = { Text("Mastered") }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Hint for multi-select
+        if (!isMultiSelectMode) {
+            Text(
+                text = "长按单词进入多选模式",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        // Word list
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else if (words.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No words yet. Add your first word!",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+        } else {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(words) { word ->
+                    WordCard(
+                        word = word,
+                        isSelected = selectedWords.contains(word),
+                        isMultiSelectMode = isMultiSelectMode,
+                        onLongClick = {
+                            if (!isMultiSelectMode) {
+                                onMultiSelectModeChange(true)
+                                onSelectedWordsChange(setOf(word))
+                            }
+                        },
+                        onClick = {
+                            if (isMultiSelectMode) {
+                                val newSelectedWords = if (selectedWords.contains(word)) {
+                                    selectedWords - word
+                                } else {
+                                    selectedWords + word
+                                }
+                                onSelectedWordsChange(newSelectedWords)
+                                // Exit multi-select mode if no words selected
+                                if (newSelectedWords.isEmpty()) {
+                                    onMultiSelectModeChange(false)
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
