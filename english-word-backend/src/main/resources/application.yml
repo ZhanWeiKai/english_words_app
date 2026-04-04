@@ -6,8 +6,7 @@ server:
 spring:
   application:
     name: english-word-backend
-
-  # 数据库配置
+  # 本地数据库配置
   datasource:
     url: jdbc:mysql://119.91.206.195:3307/english_word_app?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
@@ -19,6 +18,9 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
+  # 默认激活 local profile
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
 
   # JPA配置
   jpa:
@@ -76,39 +78,9 @@ ai:
     timeout: 60
     temperature: 0.7
     max-tokens: 2000
-    # MCP 客户端配置（AI 调用工具）
-    mcp:
-      enabled: true
-      server-url: ws://119.91.206.195:8004/mcp_endpoint/call/
-      token: mvPd7HCTRs1CB7Gc/6M4AcrmtRVnQjEhKvDWbn8Nq6w=
-      connect-timeout: 10
-
-# MCP Tool 配置（工具端注册）
-mcp:
-  tool:
-    enabled: true
-    server-url: ws://119.91.206.195:8004/mcp_endpoint/mcp/
-    token: mvPd7HCTRs1CB7Gc/6M4AcrmtRVnQjEhKvDWbn8Nq6w=
-    connect-timeout: 10
-    scan:
-      base-packages:
-        - com.englishword.mcptool.tools
 
 # DashScope 配置（ASR语音识别 / TTS语音合成）
 dashscope:
   api-key: sk-f064b98676d8401fb6139d9a5e2cf78b
   asr:
     model: fun-asr-mtl  # 多语言语音识别
-
-# ASR 文件上传配置
-asr:
-  upload-dir: ./uploads/asr
-
-# 服务器公网地址（用于生成音频文件的可访问URL）
-app:
-  base-url: http://119.91.206.195:8885
-
-
-
-
-

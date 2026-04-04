@@ -17,7 +17,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "message": "帮我添加family这个单词",
+  "message": "帮我查看我有哪些句子",
   "conversationId": null
 }
 
@@ -161,4 +161,117 @@ Accept: text/event-stream
   "message": "Let's start!",
   "mode": "word_training",
   "trainingWords": ["ubiquitous", "allocate", "implement"]
+}
+
+### =============================================
+### 句子管理测试 (Sentence) - REST API CRUD
+### =============================================
+
+### 添加句子（REST API 直接调用）
+# @name addSentence
+POST http://localhost:8885/api/sentences
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "englishText": "The early bird catches the worm.",
+  "chineseText": "早起的鸟儿有虫吃。",
+  "markedWords": "bird, worm"
+}
+
+> {%
+    if (response.body.data && response.body.data.id) {
+        client.global.set("sentenceId", response.body.data.id);
+    }
+%}
+
+### 添加句子 2
+POST http://localhost:8885/api/sentences
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "englishText": "Practice makes perfect.",
+  "chineseText": "熟能生巧。",
+  "markedWords": "practice, perfect"
+}
+
+### 添加句子 3
+POST http://localhost:8885/api/sentences
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "englishText": "Actions speak louder than words.",
+  "chineseText": "事实胜于雄辩。",
+  "markedWords": "actions, words"
+}
+
+### 获取句子列表（分页）
+GET http://localhost:8885/api/sentences?page=0&size=20
+Authorization: Bearer {{token}}
+
+### 搜索句子（关键词搜索英文/中文）
+GET http://localhost:8885/api/sentences?keyword=bird&page=0&size=20
+Authorization: Bearer {{token}}
+
+### 获取句子分页信息（包含总数、总页数）
+GET http://localhost:8885/api/sentences/page?page=0&size=10
+Authorization: Bearer {{token}}
+
+### 获取句子统计
+GET http://localhost:8885/api/sentences/statistics
+Authorization: Bearer {{token}}
+
+### 获取句子详情
+GET http://localhost:8885/api/sentences/{{sentenceId}}
+Authorization: Bearer {{token}}
+
+### 更新句子
+PUT http://localhost:8885/api/sentences/{{sentenceId}}
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "englishText": "The early bird catches the worm.",
+  "chineseText": "早起的鸟儿有虫吃。（更新）",
+  "markedWords": "early, bird, worm"
+}
+
+### 删除句子
+DELETE http://localhost:8885/api/sentences/{{sentenceId}}
+Authorization: Bearer {{token}}
+
+### =============================================
+### 通过 AI Chat 测试句子收藏 (MCP Tool)
+### =============================================
+
+### AI聊天 - 收藏句子（通过 AI 调用 add_sentence MCP Tool）
+POST http://localhost:8885/api/ai/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "收藏这个句子：Where there is a will, there is a way. 有志者事竟成。",
+  "conversationId": null
+}
+
+### AI聊天 - 查看我收藏的句子（通过 AI 调用 list_sentences MCP Tool）
+POST http://localhost:8885/api/ai/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "我收藏了哪些句子？",
+  "conversationId": null
+}
+
+### AI聊天 - 删除句子（通过 AI 调用 delete_sentence MCP Tool）
+POST http://localhost:8885/api/ai/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "删除句子 {{sentenceId}}",
+  "conversationId": null
 }
