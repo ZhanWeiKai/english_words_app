@@ -85,5 +85,17 @@ public class ChatProperties {
          * 连接超时时间（秒）
          */
         private int connectTimeout = 10;
+
+        // ==================== 重连配置 ====================
+
+        /**
+         * 是否启用自动重连
+         */
+        private boolean autoReconnect = true;
+
+        /**
+         * 收到工具端连接事件后的重连延迟（秒）
+         */
+        private int reconnectDelay = 3;
     }
 }

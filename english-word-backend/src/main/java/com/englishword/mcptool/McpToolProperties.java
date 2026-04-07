@@ -35,6 +35,30 @@ public class McpToolProperties {
      */
     private int connectTimeout = 10;
 
+    // ==================== 重连配置 ====================
+
+    /**
+     * 是否启用自动重连
+     */
+    private boolean autoReconnect = true;
+
+    /**
+     * 重连初始延迟（秒）
+     */
+    private int reconnectInitialDelay = 1;
+
+    /**
+     * 重连最大延迟（秒）
+     */
+    private int reconnectMaxDelay = 30;
+
+    /**
+     * 心跳检测间隔（秒）
+     */
+    private int heartbeatInterval = 30;
+
+    // ==================== 工具扫描配置 ====================
+
     /**
      * 工具扫描配置
      */
